@@ -49,14 +49,6 @@ Berikut adalah mockup interaktif dari tampilan aplikasi yang bisa kamu lihat sec
 > 2. Buka di browser atau emulator mobile
 > 3. Atau deploy ke GitHub Pages untuk preview live
 
-### 🎨 Screenshot Aplikasi (Mockup UI)
-
-| Beranda | Kursus Terbaru | Progress Belajar |
-| :---: | :---: | :---: |
-| ![Beranda](https://placehold.co/200x400/1a2a4f/white?text=Home+Screen) | ![Kursus](https://placehold.co/200x400/1a2a4f/white?text=Course+List) | ![Progress](https://placehold.co/200x400/1a2a4f/white?text=Learning+Progress) |
-
-> **📸 Catatan:** Silakan ganti gambar placeholder di atas dengan screenshot asli dari kode HTML/CSS yang sudah dibuat atau hasil render aplikasi Flutter Anda.
-
 ## ✨ Fitur Utama
 
 Aplikasi ini hadir dengan berbagai fitur modern untuk mendukung proses belajar mengajar:
