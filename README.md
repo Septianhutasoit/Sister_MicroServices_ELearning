@@ -37,7 +37,6 @@ Berikut adalah mockup interaktif dari tampilan aplikasi yang bisa kamu lihat sec
 
 <!-- Embed HTML/CSS Mockup menggunakan html preview (untuk GitHub, kamu bisa upload screenshot atau gunakan layanan seperti CodePen) -->
 <!-- Karena GitHub README tidak support HTML render, saya sarankan untuk menggunakan screenshot dari kode yang sudah dibuat -->
-
 </td>
 </tr>
 </table>
