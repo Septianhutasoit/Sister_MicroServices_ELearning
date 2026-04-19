@@ -40,7 +40,6 @@ Berikut adalah mockup interaktif dari tampilan aplikasi yang bisa kamu lihat sec
 </td>
 </tr>
 </table>
-
 </div>
 
 > **💡 Tips:** Untuk melihat tampilan mobile yang sudah saya buat, kamu bisa:
