@@ -31,7 +31,6 @@ Berikut adalah mockup interaktif dari tampilan aplikasi yang bisa kamu lihat sec
 **📱 EduLearn Mobile - UI Mockup**
 
 <img src="https://img.shields.io/badge/Status-Live%20Demo-brightgreen" alt="Live Demo">
-
 <br>
 <br>
 
