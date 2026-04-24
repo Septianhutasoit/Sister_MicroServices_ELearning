@@ -74,7 +74,6 @@ Aplikasi ini hadir dengan berbagai fitur modern untuk mendukung proses belajar m
 - **Interactive Elements**: Hover states, transitions, micro-interactions
 
 ## 🚀 Memulai Aplikasi
-
 Ikuti langkah-langkah sederhana ini untuk menjalankan **EduLearn Mobile** di lingkungan pengembangan Anda.
 
 ### 📋 Prasyarat
