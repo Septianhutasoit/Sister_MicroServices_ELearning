@@ -5,7 +5,6 @@ const API = axios.create({
     baseURL: "http://192.168.1.10",
 });
 
-// Otomatis tempelkan token JWT kalau admin sudah login
 API.interceptors.request.use((req) => {
     const token = localStorage.getItem("token");
     if (token) {
