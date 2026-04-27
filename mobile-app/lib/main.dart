@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'features/auth/pages/login_page.dart'; 
+import 'core/theme/app_colors.dart';
+import 'features/auth/pages/login_page.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -11,10 +13,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'E-Learning App',
-      debugShowCheckedModeBanner:
-          false, 
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1B4332)),
+        // 👇 Memanggil warna langsung dari file app_colors.dart
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+        // Menyeragamkan warna background seluruh aplikasi
+        scaffoldBackgroundColor: AppColors.background,
         useMaterial3: true,
       ),
       home: const LoginPage(),

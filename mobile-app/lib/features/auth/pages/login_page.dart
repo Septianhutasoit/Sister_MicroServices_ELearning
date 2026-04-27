@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'register_page.dart';
+import 'forgot_password_page.dart';
 import '../../../core/theme/app_colors.dart';
 
 class LoginPage extends StatefulWidget {
@@ -169,7 +171,16 @@ class _LoginPageState extends State<LoginPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    // 👇 BAGIAN INI DIUBAH 👇
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPasswordPage(),
+                        ),
+                      );
+                    },
+                    // 👆 SAMPAI SINI 👆
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primaryLight,
                     ),
@@ -184,6 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                 // --- TOMBOL MASUK ---
                 ElevatedButton(
                   onPressed: () {
+                    // Nanti ini untuk route ke Dashboard setelah API siap
                     print("Login ke E-Learning...");
                   },
                   style: ElevatedButton.styleFrom(
@@ -219,7 +231,16 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
-                      onTap: () {},
+                      // 👇 BAGIAN INI DIUBAH 👇
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterPage(),
+                          ),
+                        );
+                      },
+                      // 👆 SAMPAI SINI 👆
                       child: const Text(
                         "Daftar di sini",
                         style: TextStyle(
