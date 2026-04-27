@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../controllers/auth_controller.dart'; // Pastikan file controller ini sudah kamu buat ya
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
-   @override
+  @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
+  bool _isLoading = false; // Untuk menampilkan animasi muter
+
+  // 1. TAMBAHKAN CONTROLLER UNTUK MEMBACA KETIKAN USER
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // Memanggil AuthController untuk tembak API Gateway
+  final AuthController _authController = AuthController();
+
+  // Jangan lupa dibersihkan agar memori HP tidak bocor
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.primary),
-          onPressed: () => Navigator.pop(context), // Tombol kembali
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
@@ -48,6 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
               // --- FORM NAMA LENGKAP ---
               _buildInputContainer(
                 child: TextField(
+                  controller: _nameController, // <-- Pasang controller disini
                   decoration: _inputDecoration(
                     "Nama Lengkap",
                     Icons.person_outline,
@@ -59,6 +79,7 @@ class _RegisterPageState extends State<RegisterPage> {
               // --- FORM EMAIL ---
               _buildInputContainer(
                 child: TextField(
+                  controller: _emailController, // <-- Pasang controller disini
                   keyboardType: TextInputType.emailAddress,
                   decoration: _inputDecoration(
                     "Email address",
@@ -71,6 +92,8 @@ class _RegisterPageState extends State<RegisterPage> {
               // --- FORM PASSWORD ---
               _buildInputContainer(
                 child: TextField(
+                  controller:
+                      _passwordController, // <-- Pasang controller disini
                   obscureText: !_isPasswordVisible,
                   decoration: _inputDecoration("Password", Icons.lock_outline)
                       .copyWith(
@@ -92,14 +115,85 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 32),
 
-              // --- TOMBOL DAFTAR ---
+              // --- TOMBOL DAFTAR (BAGIAN B YANG SUDAH DIPERBAIKI) ---
               ElevatedButton(
-                onPressed: () {},
+                // Jika sedang loading, tombol mati. Jika tidak, jalankan logic.
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        // Ambil teks yang diketik user
+                        String name = _nameController.text.trim();
+                        String email = _emailController.text.trim();
+                        String password = _passwordController.text.trim();
+
+                        // Cek apakah ada yang kosong
+                        if (name.isEmpty || email.isEmpty || password.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Harap isi semua kolom!"),
+                            ),
+                          );
+                          return; // Berhenti disini, jangan lanjut ke API
+                        }
+
+                        // Mulai animasi loading
+                        setState(() => _isLoading = true);
+
+                        // INILAH BAGIAN B: Memanggil Microservices lewat Controller
+                        bool isSuccess = await _authController.register(
+                          name,
+                          email,
+                          password,
+                        );
+
+                        // Mencegah error jika user menekan tombol 'back' saat loading
+                        if (!mounted) return;
+
+                        // Matikan animasi loading
+                        setState(() => _isLoading = false);
+
+                        // Cek hasil dari API
+                        if (isSuccess) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Akun berhasil dibuat! Silakan masuk.",
+                              ),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          Navigator.pop(
+                            context,
+                          ); // Sukses? Kembali ke halaman Login
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Gagal mendaftar. Silakan coba lagi.",
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
                 style: _buttonStyle(),
-                child: const Text(
-                  "Daftar Sekarang",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                // Ubah tulisan jadi animasi muter kalau lagi loading
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        "Daftar Sekarang",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
               const SizedBox(height: 24),
 
@@ -130,7 +224,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  
   Widget _buildInputContainer({required Widget child}) {
     return Container(
       decoration: BoxDecoration(
