@@ -161,7 +161,6 @@ Sebelum memulai, pastikan Anda telah menginstal:
 | | Nginx | 1.26 | Reverse proxy |
 
 </div>
-
 <br />
 
 ---
