@@ -147,7 +147,7 @@ Sebelum memulai, pastikan Anda telah menginstal:
 
 <div align="center">
 
-| **Layer** | **Technology** | **Version** | **Purpose** |
+| **Layer** | **Technology** | **Version** | **Purpose** | 
 | :---: | :--- | :---: | :--- |
 | 🎨 **Frontend** | ReactJS | 18.3 | UI library |
 | | Vite | 5.0 | Build tool |
