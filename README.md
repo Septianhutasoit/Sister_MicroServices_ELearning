@@ -150,7 +150,7 @@ Sebelum memulai, pastikan Anda telah menginstal:
 | **Layer** | **Technology** | **Version** | **Purpose** | 
 | :---: | :--- | :---: | :--- |
 | 🎨 **Frontend** | ReactJS | 18.3 | UI library |
-| | Vite | 5.0 | Build tool |
+| | Vite | 5.0 | Build tool | 
 | | Tailwind CSS | 3.4 | Styling |
 | | Redux Toolkit | 2.0 | State management |
 | | React Router | 6.23 | Routing |
