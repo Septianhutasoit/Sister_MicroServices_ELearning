@@ -256,11 +256,10 @@ class _LoginPageState extends State<LoginPage> {
                             );
 
                             // ROUTING KE DASHBOARD (Menggunakan pushReplacement agar tidak bisa di-back ke halaman login)
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const DashboardPage(),
-                              ),
+                           Navigator.pushReplacement(
+                        context,
+                        // 👇 KATA 'const' DIHAPUS 👇
+                        MaterialPageRoute(builder: (context) => DashboardPage()),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(

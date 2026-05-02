@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 
 class DashboardPage extends StatefulWidget {
+  // Hapus kata const di konstruktor ini jika ada error, atau biarkan seperti ini
   const DashboardPage({super.key});
 
   @override
@@ -9,8 +10,9 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  int _selectedIndex = 0; 
+  int _selectedIndex = 0;
 
+  // Daftar Halaman Menu
   final List<Widget> _pages = [
     const Center(
       child: Text(
@@ -31,8 +33,6 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
-      // HEADER (APP BAR)
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: const Text(
@@ -43,23 +43,20 @@ class _DashboardPageState extends State<DashboardPage> {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () {
-              // Fungsi Logout sementara, kembali ke halaman login
-              Navigator.pop(context);
+              Navigator.pop(context); // Logout
             },
           ),
         ],
       ),
-
       body: _pages[_selectedIndex],
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
-            _selectedIndex = index; 
+            _selectedIndex = index;
           });
         },
-        type: BottomNavigationBarType.fixed, 
+        type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         items: const [
