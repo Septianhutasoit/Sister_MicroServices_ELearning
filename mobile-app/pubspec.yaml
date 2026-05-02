@@ -89,8 +89,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-flutter:
-  uses-material-design: true
 
   # Tambahkan dua baris ini dengan spasi yang persis:
   assets:

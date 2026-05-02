@@ -3,6 +3,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../models/course_model.dart';
 import '../widgets/course_card.dart';
 import '../controllers/dashboard_controller.dart';
+import '../../auth/pages/course_detail_page.dart';
 
 class DashboardMobile extends StatefulWidget {
  const DashboardMobile({super.key});
@@ -50,7 +51,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
               return CourseCard(
                 course: courses[index],
                 onTap: () {
-                  print("Membuka kursus: ${courses[index].title}");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseDetailPage(course: courses[index]),
+                    ),
+                  );
                 },
               );
             },
