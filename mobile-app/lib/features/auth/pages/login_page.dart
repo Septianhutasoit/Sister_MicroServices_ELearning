@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../dashboard/pages/dashboard_page.dart';
+
+// 👇 Uncomment ini nanti jika file AuthController sudah kamu buat
+// import '../controllers/auth_controller.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,6 +16,23 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
+
+  // 🔥 1. TAMBAHKAN STATE LOADING
+  bool _isLoading = false;
+
+  // 🔥 2. TAMBAHKAN CONTROLLER UNTUK MEMBACA KETIKAN
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // final AuthController _authController = AuthController();
+
+  // 🔥 3. BERSIHKAN MEMORY SAAT HALAMAN DITUTUP
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +50,12 @@ class _LoginPageState extends State<LoginPage> {
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.primarySoft, // Lingkaran hijau pudar
+                    decoration: const BoxDecoration(
+                      color: AppColors.primarySoft,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.menu_book_rounded, // Icon buku modern
+                      Icons.menu_book_rounded,
                       size: 64,
                       color: AppColors.primary,
                     ),
@@ -48,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary, // Judul pakai hijau tua
+                    color: AppColors.primary,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -78,6 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   child: TextField(
+                    controller: _emailController, // 🔥 PASANG CONTROLLER
                     keyboardType: TextInputType.emailAddress,
                     style: const TextStyle(fontWeight: FontWeight.w500),
                     decoration: InputDecoration(
@@ -95,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none, // Hilangkan border bawaan
+                        borderSide: BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -123,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   child: TextField(
+                    controller: _passwordController, // 🔥 PASANG CONTROLLER
                     obscureText: !_isPasswordVisible,
                     style: const TextStyle(fontWeight: FontWeight.w500),
                     decoration: InputDecoration(
@@ -171,7 +194,6 @@ class _LoginPageState extends State<LoginPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    // 👇 BAGIAN INI DIUBAH 👇
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -180,7 +202,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       );
                     },
-                    // 👆 SAMPAI SINI 👆
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primaryLight,
                     ),
@@ -192,32 +213,94 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // --- TOMBOL MASUK ---
+                // 🔥 4. TOMBOL MASUK YANG SUDAH DIMODIFIKASI LOGIC-NYA 🔥
                 ElevatedButton(
-                  onPressed: () {
-                    // Nanti ini untuk route ke Dashboard setelah API siap
-                    print("Login ke E-Learning...");
-                  },
+                  // Jika sedang loading, tombol tidak bisa diklik (null)
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          String email = _emailController.text.trim();
+                          String password = _passwordController.text.trim();
+
+                          // Validasi form kosong
+                          if (email.isEmpty || password.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Harap isi email dan password!"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // Mulai animasi loading
+                          setState(() => _isLoading = true);
+
+                          // --- SIMULASI KONEKSI KE API ---
+                          // Nanti ganti dengan: bool isSuccess = await _authController.login(email, password);
+                          await Future.delayed(const Duration(seconds: 2));
+                          bool isSuccess =
+                              true; // Kita anggap login selalu sukses untuk test UI
+
+                          // Cegah error jika halaman keburu ditutup user
+                          if (!mounted) return;
+
+                          // Matikan animasi loading
+                          setState(() => _isLoading = false);
+
+                          if (isSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Login Berhasil!"),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+
+                            // ROUTING KE DASHBOARD (Menggunakan pushReplacement agar tidak bisa di-back ke halaman login)
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DashboardPage(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Login Gagal, periksa kembali akun Anda.",
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary, // Warna hijau tua
-                    foregroundColor: Colors.white, // Warna text putih
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     elevation: 2,
                     shadowColor: AppColors.primary.withOpacity(0.5),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        16,
-                      ), // Ujung membulat halus
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    "Masuk",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                  // Ubah text jadi animasi muter kalau lagi loading
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Masuk",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 32),
 
@@ -231,7 +314,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
-                      // 👇 BAGIAN INI DIUBAH 👇
                       onTap: () {
                         Navigator.push(
                           context,
@@ -240,7 +322,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
                       },
-                      // 👆 SAMPAI SINI 👆
                       child: const Text(
                         "Daftar di sini",
                         style: TextStyle(
