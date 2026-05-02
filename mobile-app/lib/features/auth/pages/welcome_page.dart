@@ -11,25 +11,17 @@ class WelcomePage extends StatelessWidget {
       backgroundColor: AppColors.primary,
       body: Column(
         children: [
-
+          // --- SETENGAH ATAS: GAMBAR DARI LOKAL ASSETS ---
           Expanded(
             flex: 6, // Mengambil 60% tinggi layar
             child: SizedBox(
               width: double.infinity,
-              // SEMENTARA MENGGUNAKAN GAMBAR DARI INTERNET (UNSPLASH)
-              // Nanti bisa diganti dengan gambar lokal (assets)
-              child: Image.network(
-                'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop',
-                fit: BoxFit
-                    .cover, // Gambar akan memenuhi area tanpa merusak rasio
-                // Efek loading gambar
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  );
-                },
+              // 👇 INI BAGIAN YANG DIUBAH 👇
+              child: Image.asset(
+                'assets/images/welcome_bg.jpg', // Pastikan nama dan ekstensi sama persis
+                fit: BoxFit.cover, // Gambar memenuhi area tanpa merusak rasio
               ),
+              // 👆 SAMPAI SINI 👆
             ),
           ),
 
@@ -92,7 +84,6 @@ class WelcomePage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         // PINDAH KE HALAMAN LOGIN
-                        // pushReplacement digunakan agar user tidak bisa 'back' ke halaman welcome
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -106,9 +97,7 @@ class WelcomePage extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            16,
-                          ), // Tombol melengkung
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                       child: const Text(
