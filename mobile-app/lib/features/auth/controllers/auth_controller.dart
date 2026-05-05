@@ -58,4 +58,16 @@ class AuthController {
       return false;
     }
   }
+  // --- 3. FUNGSI UNTUK MENGAMBIL TOKEN (Dinamis untuk halaman lain) ---
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token');
+  }
+
+  // --- 4. FUNGSI LOGOUT (Hapus Token) ---
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt_token'); // Menghapus memori sesi
+    print("Logout sukses, Token dihapus!");
+  }
 }
