@@ -5,15 +5,14 @@ export interface User {
     role: string;
 }
 
+export interface AuthResponse {
+    token: string;
+    user: User;
+}
+
 export interface Course {
     id: string;
     title: string;
     description: string;
     instructor: string;
-    price?: number; // Opsional
-}
-
-export interface AuthResponse {
-    token: string;
-    user: User;
 }
