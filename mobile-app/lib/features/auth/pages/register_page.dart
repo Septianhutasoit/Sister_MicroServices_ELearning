@@ -11,7 +11,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
-  bool _isLoading = false; // Untuk menampilkan animasi muter
+  bool _isLoading = false; 
 
   // 1. TAMBAHKAN CONTROLLER UNTUK MEMBACA KETIKAN USER
   final TextEditingController _nameController = TextEditingController();

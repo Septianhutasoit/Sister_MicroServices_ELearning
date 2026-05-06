@@ -4,7 +4,6 @@ import 'forgot_password_page.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../dashboard/pages/dashboard_page.dart';
 
-// 👇 Uncomment ini nanti jika file AuthController sudah kamu buat
 // import '../controllers/auth_controller.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,17 +15,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
-
-  // 🔥 1. TAMBAHKAN STATE LOADING
   bool _isLoading = false;
 
-  // 🔥 2. TAMBAHKAN CONTROLLER UNTUK MEMBACA KETIKAN
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   // final AuthController _authController = AuthController();
 
-  // 🔥 3. BERSIHKAN MEMORY SAAT HALAMAN DITUTUP
   @override
   void dispose() {
     _emailController.dispose();
@@ -41,129 +36,176 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 32.0,
+              vertical: 24.0,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // --- HEADER & LOGO ---
+                // --- 1. LOGO DENGAN HALO EFFECT (PREMIUM) ---
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: const BoxDecoration(
-                      color: AppColors.primarySoft,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft.withOpacity(
+                        0.3,
+                      ), // Lingkaran luar transparan
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.menu_book_rounded,
-                      size: 64,
-                      color: AppColors.primary,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primarySoft, // Lingkaran dalam
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.menu_book_rounded,
+                        size: 56,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
 
+                // --- 2. TYPOGRAPHY MODERN ---
                 const Text(
-                  "Selamat Datang",
+                  "Selamat Datang Kembali",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
+                    fontWeight: FontWeight.w900, // Extra Bold untuk ketegasan
+                    color: AppColors
+                        .textPrimary, // Pakai warna teks gelap, bukan hijau
                     letterSpacing: -0.5,
                   ),
                 ),
                 const SizedBox(height: 8),
-
                 const Text(
-                  "Silakan masuk ke akun belajarmu",
+                  "Silakan masuk untuk melanjutkan proses belajarmu hari ini.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
                     color: AppColors.textSecondary,
+                    height: 1.5,
                   ),
                 ),
                 const SizedBox(height: 48),
 
-                // --- FORM EMAIL ---
+                // --- 3. FORM EMAIL DENGAN LABEL (PROFESIONAL) ---
+                const Text(
+                  "Email Address",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        color: AppColors.primary.withOpacity(
+                          0.04,
+                        ), // Shadow mengikuti warna tema
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
                   child: TextField(
-                    controller: _emailController, // 🔥 PASANG CONTROLLER
+                    controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                    ),
                     decoration: InputDecoration(
-                      hintText: "Email address",
-                      hintStyle: const TextStyle(
-                        color: AppColors.textSecondary,
+                      hintText: "nama@email.com",
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
                         fontWeight: FontWeight.normal,
                       ),
                       prefixIcon: const Icon(
-                        Icons.email_outlined,
+                        Icons.alternate_email_rounded,
                         color: AppColors.primaryLight,
+                        size: 22,
                       ),
                       filled: true,
-                      fillColor: AppColors.surface,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 20),
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 18),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: const BorderSide(
                           color: AppColors.primary,
-                          width: 1.5,
+                          width: 2,
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-                // --- FORM PASSWORD ---
+                // --- 4. FORM PASSWORD DENGAN LABEL ---
+                const Text(
+                  "Password",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        color: AppColors.primary.withOpacity(0.04),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
                   child: TextField(
-                    controller: _passwordController, // 🔥 PASANG CONTROLLER
+                    controller: _passwordController,
                     obscureText: !_isPasswordVisible,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                    ),
                     decoration: InputDecoration(
-                      hintText: "Password",
-                      hintStyle: const TextStyle(
-                        color: AppColors.textSecondary,
+                      hintText: "••••••••",
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
                         fontWeight: FontWeight.normal,
                       ),
                       prefixIcon: const Icon(
-                        Icons.lock_outline,
+                        Icons.lock_outline_rounded,
                         color: AppColors.primaryLight,
+                        size: 22,
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: AppColors.textSecondary,
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          color: Colors.grey.shade400,
+                          size: 22,
                         ),
                         onPressed: () {
                           setState(() {
@@ -172,25 +214,29 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       filled: true,
-                      fillColor: AppColors.surface,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 20),
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 18),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: const BorderSide(
                           color: AppColors.primary,
-                          width: 1.5,
+                          width: 2,
                         ),
                       ),
                     ),
                   ),
                 ),
 
-                // --- LUPA PASSWORD ---
-                const SizedBox(height: 12),
+                // --- 5. LUPA PASSWORD ---
+                const SizedBox(height: 8),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -204,25 +250,32 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primaryLight,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: const Text(
                       "Lupa Password?",
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
-                // 🔥 4. TOMBOL MASUK YANG SUDAH DIMODIFIKASI LOGIC-NYA 🔥
+                // --- 6. TOMBOL MASUK (LEBIH TEGAS & ADA IKON) ---
                 ElevatedButton(
-                  // Jika sedang loading, tombol tidak bisa diklik (null)
                   onPressed: _isLoading
                       ? null
                       : () async {
                           String email = _emailController.text.trim();
                           String password = _passwordController.text.trim();
 
-                          // Validasi form kosong
                           if (email.isEmpty || password.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -232,19 +285,13 @@ class _LoginPageState extends State<LoginPage> {
                             return;
                           }
 
-                          // Mulai animasi loading
                           setState(() => _isLoading = true);
 
-                          // --- SIMULASI KONEKSI KE API ---
-                          // Nanti ganti dengan: bool isSuccess = await _authController.login(email, password);
+                          // Simulasi API
                           await Future.delayed(const Duration(seconds: 2));
-                          bool isSuccess =
-                              true; // Kita anggap login selalu sukses untuk test UI
+                          bool isSuccess = true;
 
-                          // Cegah error jika halaman keburu ditutup user
                           if (!mounted) return;
-
-                          // Matikan animasi loading
                           setState(() => _isLoading = false);
 
                           if (isSuccess) {
@@ -254,12 +301,11 @@ class _LoginPageState extends State<LoginPage> {
                                 backgroundColor: Colors.green,
                               ),
                             );
-
-                            // ROUTING KE DASHBOARD (Menggunakan pushReplacement agar tidak bisa di-back ke halaman login)
-                           Navigator.pushReplacement(
-                        context,
-                        // 👇 KATA 'const' DIHAPUS 👇
-                        MaterialPageRoute(builder: (context) => DashboardPage()),
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DashboardPage(),
+                              ),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -276,42 +322,55 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 18),
-                    elevation: 2,
-                    shadowColor: AppColors.primary.withOpacity(0.5),
+                    elevation: 4,
+                    shadowColor: AppColors.primary.withOpacity(0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  // Ubah text jadi animasi muter kalau lagi loading
                   child: _isLoading
                       ? const SizedBox(
-                          height: 20,
-                          width: 20,
+                          height: 24,
+                          width: 24,
                           child: CircularProgressIndicator(
                             color: Colors.white,
-                            strokeWidth: 2,
+                            strokeWidth: 2.5,
                           ),
                         )
-                      : const Text(
-                          "Masuk",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Masuk ke Akun",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 20,
+                            ), // Ikon panah memotivasi user
+                          ],
                         ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
 
-                // --- DAFTAR ---
+                // --- 7. DAFTAR (LEBIH RAPI) ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "Siswa baru?",
-                      style: TextStyle(color: AppColors.textSecondary),
+                      "Belum punya akun?",
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -322,10 +381,11 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: const Text(
-                        "Daftar di sini",
+                        "Daftar Sekarang",
                         style: TextStyle(
                           color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
                         ),
                       ),
                     ),
