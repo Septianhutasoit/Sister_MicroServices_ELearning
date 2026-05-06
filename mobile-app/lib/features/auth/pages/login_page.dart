@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: const BoxDecoration(
-                        color: AppColors.primarySoft, // Lingkaran dalam
+                        color: AppColors.primarySoft, 
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
