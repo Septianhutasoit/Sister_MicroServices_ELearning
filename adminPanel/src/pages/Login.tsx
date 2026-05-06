@@ -10,42 +10,43 @@ export default function Login() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-            
+        try {
             const res = await API.post<{ data: AuthResponse }>("/auth/admin/login", { email, password });
-
             localStorage.setItem("token", res.data.data.token);
             alert("Login Berhasil!");
-            navigate("/dashboard"); 
+            navigate("/dashboard");
         } catch (error) {
             alert("Login Gagal, periksa email/password");
         }
     };
 
     return (
-        <div style={{ padding: "50px" }}>
+        <div style={{ padding: "50px", maxWidth: "400px", margin: "0 auto" }}>
             <h2>Login Admin Panel</h2>
             <form onSubmit={handleLogin}>
-                <div>
+                <div style={{ marginBottom: "15px" }}>
                     <input
                         type="email"
                         placeholder="Admin Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        style={{ width: "100%", padding: "10px" }}
                     />
                 </div>
-                <br />
-                <div>
+                <div style={{ marginBottom: "15px" }}>
                     <input
                         type="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        style={{ width: "100%", padding: "10px" }}
                     />
                 </div>
-                <br />
-                <button type="submit">Login</button>
+                <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#008A5E", color: "white", border: "none", cursor: "pointer" }}>
+                    Login
+                </button>
             </form>
         </div>
     );
