@@ -18,7 +18,7 @@ class WelcomePage extends StatelessWidget {
               width: double.infinity,
               // 👇 INI BAGIAN YANG DIUBAH 👇
               child: Image.asset(
-                'assets/images/welcome_bg.jpg', // Pastikan nama dan ekstensi sama persis
+                'assets/images/welcome_bg.jpg', 
                 fit: BoxFit.cover, // Gambar memenuhi area tanpa merusak rasio
               ),
               // 👆 SAMPAI SINI 👆
