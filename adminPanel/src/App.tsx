@@ -1,34 +1,25 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Login from "./pages/Login";
-// Pastikan path ke DashboardLayout ini benar sesuai folder kamu!
 import DashboardLayout from "./layouts/DashboardLayout";
+import Dashboard from "./pages/Dashboard";
 
-// Komponen Dummy agar tidak error saat dirender
-const DummyPage = ({ title }: { title: string }) => (
-  <div className="bg-white p-8 rounded-2xl shadow-sm h-full">
-    <h2 className="text-xl font-bold">{title}</h2>
-  </div>
-);
+const theme = createTheme();
 
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Rute untuk halaman Login */}
-        <Route path="/" element={<Login />} />
-
-        {/* Rute untuk halaman Admin (Dibungkus oleh Layout) */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<DummyPage title="Halaman Dashboard Utama" />} />
-          <Route path="/users" element={<DummyPage title="Tabel Data Siswa" />} />
-          <Route path="/courses" element={<DummyPage title="Manajemen Kursus & Materi" />} />
-          <Route path="/exams" element={<DummyPage title="Data Ujian & Nilai" />} />
-          <Route path="/notifications" element={<DummyPage title="Kirim Notifikasi (RabbitMQ)" />} />
-          <Route path="/settings" element={<DummyPage title="Pengaturan Sistem" />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            {/* Tambah route lain di sini */}
+          </Route>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
-
-export default App;
