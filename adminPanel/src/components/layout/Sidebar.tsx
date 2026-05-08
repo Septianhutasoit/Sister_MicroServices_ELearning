@@ -85,7 +85,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                         sx={{
                             fontSize: 11,
                             fontWeight: 800,
-                            color: '#059669',
+                            color: '#059669',    
                             letterSpacing: 1.5,
                             textTransform: 'uppercase',
                         }}
