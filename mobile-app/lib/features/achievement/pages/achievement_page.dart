@@ -5,8 +5,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../models/course_model.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../course/pages/course_detail_page.dart';
-import '../../exam/pages/exam_page.dart';
 import '../../notification/pages/notification_page.dart';
+import '../../achievement/pages/achievement_page.dart';
 import '../../profile/pages/profile_page.dart';
 
 // ========== 1. MODEL PROGRESS MATERI ==========
@@ -77,11 +77,6 @@ class ProgressManager {
     );
     _save();
   }
-
-  static void resetProgress(String courseId) {
-    _progressMap.remove(courseId);
-    _save();
-  }
 }
 
 // ========== 2. HALAMAN DAFTAR MATERI (BELAJAR) ==========
@@ -110,498 +105,185 @@ class _MateriListPageState extends State<MateriListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async => _refresh(),
-      child: FutureBuilder<List<CourseModel>>(
-        future: _futureCourses,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
-          }
-          if (snapshot.hasError ||
-              !snapshot.hasData ||
-              snapshot.data!.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Belum ada materi",
-                    style: TextStyle(color: Colors.grey.shade600),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _refresh,
-                    child: const Text("Refresh"),
-                  ),
-                ],
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Text(
+              "Materi Pembelajaran",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
-            );
-          }
-          final courses = snapshot.data!;
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: courses.length,
-            itemBuilder: (context, index) {
-              final course = courses[index];
-              final progress = ProgressManager.getProgress(course.id);
-              final isCompleted = progress?.isCompleted ?? false;
-              final examScore = progress?.examScore;
-              return GestureDetector(
-                onTap: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => MateriDetailPage(
-                        course: course,
-                        isCompleted: isCompleted,
-                        examScore: examScore,
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async => _refresh(),
+              child: FutureBuilder<List<CourseModel>>(
+                future: _futureCourses,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
                       ),
-                    ),
-                  );
-                  if (result == true) _refresh();
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          bottomLeft: Radius.circular(20),
-                        ),
-                        child: Image.network(
-                          course.imageUrl,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            width: 100,
-                            height: 100,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.broken_image),
+                    );
+                  }
+                  if (snapshot.hasError ||
+                      !snapshot.hasData ||
+                      snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.grey,
                           ),
-                        ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Belum ada materi",
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: _refresh,
+                            child: const Text("Refresh"),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    );
+                  }
+                  final courses = snapshot.data!;
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    itemCount: courses.length,
+                    itemBuilder: (context, index) {
+                      final course = courses[index];
+                      final progress = ProgressManager.getProgress(course.id);
+                      final isCompleted = progress?.isCompleted ?? false;
+                      final examScore = progress?.examScore;
+
+                      return GestureDetector(
+                        onTap: () async {
+                          // Nanti bisa diarahkan ke MateriDetailPage
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
                             children: [
-                              Text(
-                                course.title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  bottomLeft: Radius.circular(20),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                course.instructor,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isCompleted
-                                          ? AppColors.primary
-                                          : Colors.orange.shade100,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      isCompleted
-                                          ? "Selesai (Nilai: ${examScore ?? '-'})"
-                                          : "Belum dipelajari",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: isCompleted
-                                            ? Colors.white
-                                            : Colors.orange.shade800,
-                                      ),
-                                    ),
+                                child: Image.network(
+                                  course.imageUrl,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    width: 100,
+                                    height: 100,
+                                    color: Colors.grey.shade200,
+                                    child: const Icon(Icons.broken_image),
                                   ),
-                                  if (isCompleted) ...[
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.check_circle,
-                                      color: AppColors.primary,
-                                      size: 16,
-                                    ),
-                                  ],
-                                ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        course.title,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        course.instructor,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isCompleted
+                                                  ? AppColors.primary
+                                                  : Colors.orange.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              isCompleted
+                                                  ? "Selesai (Nilai: ${examScore ?? '-'})"
+                                                  : "Belum dipelajari",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: isCompleted
+                                                    ? Colors.white
+                                                    : Colors.orange.shade800,
+                                              ),
+                                            ),
+                                          ),
+                                          if (isCompleted) ...[
+                                            const SizedBox(width: 8),
+                                            const Icon(
+                                              Icons.check_circle,
+                                              color: AppColors.primary,
+                                              size: 16,
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Icon(Icons.chevron_right, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
-
-// ========== 3. HALAMAN DETAIL MATERI (MEMBACA) ==========
-class MateriDetailPage extends StatefulWidget {
-  final CourseModel course;
-  final bool isCompleted;
-  final int? examScore;
-
-  const MateriDetailPage({
-    super.key,
-    required this.course,
-    required this.isCompleted,
-    this.examScore,
-  });
-
-  @override
-  State<MateriDetailPage> createState() => _MateriDetailPageState();
-}
-
-class _MateriDetailPageState extends State<MateriDetailPage> {
-  bool _isMarked = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _isMarked = widget.isCompleted;
-  }
-
-  void _markComplete() {
-    setState(() {
-      _isMarked = true;
-    });
-    ProgressManager.markCompleted(widget.course.id);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Materi ditandai selesai!")));
-  }
-
-  void _startExam() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ExamPage(
-          courseId: widget.course.id,
-          courseTitle: widget.course.title,
-        ),
-      ),
-    );
-    if (result != null && result is int) {
-      ProgressManager.markCompleted(widget.course.id, examScore: result);
-      setState(() {});
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Ujian selesai! Nilai: $result")),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.course.title),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                widget.course.imageUrl,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  height: 200,
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.broken_image, size: 50),
-                ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              widget.course.title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Oleh: ${widget.course.instructor}",
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              "Materi Pembelajaran",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              widget.course.description,
-              style: const TextStyle(fontSize: 16, height: 1.5),
-            ),
-            const SizedBox(height: 32),
-            // Tombol aksi
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _isMarked ? null : _markComplete,
-                    icon: const Icon(Icons.done_all),
-                    label: Text(_isMarked ? "Telah Selesai" : "Tandai Selesai"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isMarked
-                          ? Colors.grey
-                          : AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _isMarked ? _startExam : null,
-                    icon: const Icon(Icons.quiz),
-                    label: const Text("Ikuti Ujian"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isMarked
-                          ? AppColors.primary
-                          : Colors.grey.shade300,
-                      foregroundColor: _isMarked ? Colors.white : Colors.grey,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (widget.examScore != null) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.score, color: AppColors.primary),
-                    const SizedBox(width: 8),
-                    Text(
-                      "Nilai ujian terakhir: ${widget.examScore}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 32),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
-}
-
-// ========== 4. HALAMAN UJIAN (CONTOH SOAL) ==========
-class ExamPage extends StatefulWidget {
-  final String courseId;
-  final String courseTitle;
-  const ExamPage({
-    super.key,
-    required this.courseId,
-    required this.courseTitle,
-  });
-
-  @override
-  State<ExamPage> createState() => _ExamPageState();
-}
-
-class _ExamPageState extends State<ExamPage> {
-  final List<Map<String, dynamic>> _questions = [
-    {
-      "text": "Apa singkatan dari ENIAC?",
-      "options": [
-        "Electronic Numerical Integrator and Computer",
-        "Electronic Number Integrator and Calculator",
-        "Electrical Numerical Integrator and Computer",
-        "Electronic Network Integrator and Computer",
-      ],
-      "answer": 0,
-    },
-    {
-      "text": "Tahun berapa ARPANET pertama kali beroperasi?",
-      "options": ["1965", "1969", "1971", "1973"],
-      "answer": 1,
-    },
-    {
-      "text": "Siapa yang dikenal sebagai 'Bapak Kecerdasan Buatan'?",
-      "options": [
-        "Alan Turing",
-        "John McCarthy",
-        "Marvin Minsky",
-        "Herbert Simon",
-      ],
-      "answer": 1,
-    },
-  ];
-
-  late List<int?> _selectedAnswers;
-  bool _submitted = false;
-  int _score = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedAnswers = List.filled(_questions.length, null);
-  }
-
-  void _submitExam() {
-    int correct = 0;
-    for (int i = 0; i < _questions.length; i++) {
-      if (_selectedAnswers[i] == _questions[i]["answer"]) correct++;
-    }
-    final score = (correct / _questions.length * 100).round();
-    setState(() {
-      _submitted = true;
-      _score = score;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Ujian: ${widget.courseTitle}"),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: _submitted
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.assignment_turned_in,
-                    size: 80,
-                    color: AppColors.primary,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    "Nilai Anda: $_score",
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Jawaban benar: ${(_score / 100 * _questions.length).round()} dari ${_questions.length}",
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context, _score),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text("Kembali ke Materi"),
-                  ),
-                ],
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _questions.length,
-              itemBuilder: (context, index) {
-                final q = _questions[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${index + 1}. ${q["text"]}",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        ...List.generate(q["options"].length, (optIndex) {
-                          return RadioListTile<int>(
-                            title: Text(q["options"][optIndex]),
-                            value: optIndex,
-                            groupValue: _selectedAnswers[index],
-                            onChanged: (val) {
-                              setState(() {
-                                _selectedAnswers[index] = val;
-                              });
-                            },
-                            activeColor: AppColors.primary,
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-      bottomNavigationBar: _submitted
-          ? null
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: _selectedAnswers.every((a) => a != null)
-                    ? _submitExam
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: const Text("Kirim Jawaban"),
-              ),
-            ),
     );
   }
 }
@@ -642,19 +324,13 @@ class _DashboardMobileState extends State<DashboardMobile> {
       "image":
           "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format",
     },
-    {
-      "title": "Blockchain",
-      "subtitle": "Revolusi desentralisasi",
-      "image":
-          "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format",
-    },
   ];
 
   @override
   void initState() {
     super.initState();
     _startCarouselTimer();
-    ProgressManager.init(); // inisialisasi shared preferences
+    ProgressManager.init();
   }
 
   void _startCarouselTimer() {
@@ -683,7 +359,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildCustomHeader(),
+          _buildCustomHeader(context), // 👈 Passing context untuk navigasi
           const SizedBox(height: 16),
           _buildCarousel(),
           const SizedBox(height: 24),
@@ -699,13 +375,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
       ),
     );
 
+    // 🔥 ARRAY HALAMAN NAVIGASI BAWAH (SUDAH DINAMIS)
     final pages = [
-      homePageContent,
-      MateriListPage(controller: _controller),
-      const Center(
-        child: Text("Pencapaian Saya", style: TextStyle(fontSize: 20)),
-      ),
-      const Center(child: Text("Profil Saya", style: TextStyle(fontSize: 20))),
+      homePageContent, // 0: Home Dashboard
+      MateriListPage(controller: _controller), // 1: Daftar Materi Belajar
+      const AchievementPage(), // 2: Halaman Pencapaian Riwayat
+      const ProfilePage(), // 3: Halaman Profil User
     ];
 
     return Scaffold(
@@ -740,9 +415,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
               label: "Materi",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events_outlined),
+              icon: Icon(Icons.emoji_events_rounded),
               label: "Pencapaian",
-            ),
+            ), // Ikon piala
             BottomNavigationBarItem(
               icon: Icon(Icons.person_rounded),
               label: "Profil",
@@ -753,8 +428,11 @@ class _DashboardMobileState extends State<DashboardMobile> {
     );
   }
 
-  // ========== TAMPILAN SAMA SEPERTI SEBELUMNYA (HEADER, CAROUSEL, KATEGORI, KURSUS POPULER, PENCAPAIAN) ==========
-  Widget _buildCustomHeader() {
+  // =========================================================
+  // WIDGET HELPER
+  // =========================================================
+
+  Widget _buildCustomHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 32),
       decoration: const BoxDecoration(
@@ -762,13 +440,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(32),
           bottomRight: Radius.circular(32),
-        ),
-        image: DecorationImage(
-          image: NetworkImage(
-            "https://www.transparenttextures.com/patterns/cubes.png",
-          ),
-          opacity: 0.05,
-          fit: BoxFit.cover,
         ),
       ),
       child: Column(
@@ -798,19 +469,30 @@ class _DashboardMobileState extends State<DashboardMobile> {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: const Badge(
-                  backgroundColor: Colors.redAccent,
-                  smallSize: 10,
-                  child: Icon(
-                    Icons.notifications_none_rounded,
-                    color: Colors.white,
-                    size: 28,
+              // 🔥 IKON LONCENG NOTIFIKASI BISA DIKLIK
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationPage(),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Badge(
+                    backgroundColor: Colors.redAccent,
+                    smallSize: 10,
+                    child: Icon(
+                      Icons.notifications_none_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ),
                 ),
               ),
@@ -822,18 +504,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
             ),
             child: TextField(
               decoration: InputDecoration(
-                hintText: "Cari materi sejarah...",
-                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                hintText: "Cari materi...",
                 border: InputBorder.none,
                 icon: const Icon(Icons.search, color: Colors.grey),
                 suffixIcon: Container(
@@ -988,18 +662,15 @@ class _DashboardMobileState extends State<DashboardMobile> {
     return FutureBuilder<List<CourseModel>>(
       future: _controller.fetchCourses(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting)
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(32),
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
           );
-        } else if (snapshot.hasError ||
-            !snapshot.hasData ||
-            snapshot.data!.isEmpty) {
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty)
           return _buildDummyCoursesGrid();
-        }
         final courses = snapshot.data!;
         return GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1022,7 +693,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     final dummyCourses = [
       CourseModel(
         id: "d1",
-        title: "Design Thinking Fundamental",
+        title: "Design Thinking",
         description: "Pelajari metode design thinking",
         instructor: "Robert Green",
         imageUrl:
@@ -1030,7 +701,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
       ),
       CourseModel(
         id: "d2",
-        title: "3D Illustration Design",
+        title: "3D Illustration",
         description: "Kuasai ilustrasi 3D",
         instructor: "John Doe",
         imageUrl:
@@ -1046,7 +717,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
       ),
       CourseModel(
         id: "d4",
-        title: "Blockchain Fundamental",
+        title: "Blockchain Dasar",
         description: "Dasar-dasar blockchain",
         instructor: "Dr. Satoshi",
         imageUrl:
@@ -1135,22 +806,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.bookmark_border_rounded,
-                      size: 16,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
               ],
             ),
             Padding(
@@ -1183,24 +838,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Rp 180.000",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const Text(
-                        "Baca Selengkapnya",
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -1246,11 +883,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     final exams = [
       {"title": "Sejarah Komputer", "score": "90", "status": "Lulus Memuaskan"},
       {"title": "Perkembangan Internet", "score": "85", "status": "Lulus"},
-      {
-        "title": "AI & Masa Depan",
-        "score": "Menunggu",
-        "status": "Dalam Penilaian",
-      },
     ];
     return SizedBox(
       height: 110,
