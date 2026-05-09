@@ -5,9 +5,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../models/course_model.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../course/pages/course_detail_page.dart';
-import '../../exam/pages/exam_page.dart';
-import '../../notification/pages/notification_page.dart';
+import '../../achievement/pages/achievement_page.dart';
 import '../../profile/pages/profile_page.dart';
+import '../../notification/pages/notification_page.dart';
 
 // ========== 1. MODEL PROGRESS MATERI ==========
 class MateriProgress {
@@ -740,9 +740,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
               label: "Materi",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events_outlined),
+              icon: Icon(Icons.emoji_events_rounded),
               label: "Pencapaian",
-            ),
+            ), // Pakai rounded
             BottomNavigationBarItem(
               icon: Icon(Icons.person_rounded),
               label: "Profil",

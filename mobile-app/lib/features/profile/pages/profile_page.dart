@@ -1,106 +1,146 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../controllers/profile_controller.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final ProfileController _controller = ProfileController();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 32),
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: AppColors.primarySoft,
-              child: Icon(Icons.person, size: 50, color: AppColors.primary),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "Budi Mahasiswa",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              "budi@mahasiswa.edu.ai",
-              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 32),
+      // 🔥 GUNAKAN FUTURE BUILDER UNTUK MENGAMBIL DATA DARI BACKEND
+      child: FutureBuilder<Map<String, dynamic>?>(
+        future: _controller.getProfile(),
+        builder: (context, snapshot) {
+          // 1. Jika sedang loading
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
+          }
 
-            // Statistik
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  _statBox("Kursus", "4"),
-                  const SizedBox(width: 16),
-                  _statBox("Lulus", "2"),
-                  const SizedBox(width: 16),
-                  _statBox("Sertifikat", "1"),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
+          // 2. Data Fallback (Jika backend mati / error)
+          final userData =
+              snapshot.data ??
+              {
+                "name": "Mahasiswa (Offline)",
+                "email": "user@edu.ai",
+                "stats": {"courses": 0, "passed": 0, "certificates": 0},
+              };
 
-            // Menu Profil
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 32),
+                const CircleAvatar(
+                  radius: 50,
+                  backgroundColor: AppColors.primarySoft,
+                  child: Icon(Icons.person, size: 50, color: AppColors.primary),
+                ),
+                const SizedBox(height: 16),
+
+                // 🔥 DATA NAMA DAN EMAIL DINAMIS
+                Text(
+                  userData['name'],
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
                   ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  _profileMenuItem(Icons.person_outline, "Edit Profil"),
-                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                  _profileMenuItem(Icons.security, "Keamanan & Sandi"),
-                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                  _profileMenuItem(Icons.help_outline_rounded, "Pusat Bantuan"),
-                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.logout, color: Colors.red),
-                    ),
-                    title: const Text(
-                      "Keluar",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.red,
-                      ),
-                    ),
-                    onTap: () {
-                      // Nanti fungsi logout panggil AuthController disini
-                      Navigator.pop(context); // Kembali ke Login
-                    },
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  userData['email'],
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 32),
+
+                // 🔥 STATISTIK DINAMIS
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      _statBox(
+                        "Kursus",
+                        userData['stats']['courses'].toString(),
+                      ),
+                      const SizedBox(width: 16),
+                      _statBox("Lulus", userData['stats']['passed'].toString()),
+                      const SizedBox(width: 16),
+                      _statBox(
+                        "Sertifikat",
+                        userData['stats']['certificates'].toString(),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Menu Profil
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      _profileMenuItem(Icons.person_outline, "Edit Profil"),
+                      const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                      _profileMenuItem(Icons.security, "Keamanan & Sandi"),
+                      const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                      ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.logout, color: Colors.red),
+                        ),
+                        title: const Text(
+                          "Keluar",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.red,
+                          ),
+                        ),
+                        onTap: () {
+                          // TODO: Panggil fungsi logout dari AuthController
+                          Navigator.pop(context); // Kembali ke Login
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
-            const SizedBox(height: 40),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _statBox(String title, String count) {
+    /* Sama seperti sebelumnya */
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -141,6 +181,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _profileMenuItem(IconData icon, String title) {
+    /* Sama seperti sebelumnya */
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
