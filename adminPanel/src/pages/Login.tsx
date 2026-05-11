@@ -10,11 +10,9 @@ import {
     InputAdornment,
     IconButton,
     CircularProgress,
-    Grid,
     alpha,
     useTheme,
     CssBaseline,
-    GlobalStyles,
 } from "@mui/material";
 import {
     Email,
@@ -46,227 +44,161 @@ export default function Login() {
             localStorage.setItem("token", res.data.data.token);
             navigate("/dashboard");
         } catch (error) {
+            // Bypass khusus untuk testing jika Backend/CORS masih error
             if (email === "admin@example.com" && password === "admin123") {
                 localStorage.setItem("token", "dummy_token_123");
                 navigate("/dashboard");
                 return;
             }
-            alert("Login gagal. Periksa email/password atau pastikan backend berjalan.");
+            alert("Login gagal. Terjadi error jaringan (CORS) atau kredensial salah.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Reset margin/padding global secara maksimal
-    const globalStyles = {
-        html: { height: "100%", margin: 0, padding: 0, overflow: "hidden" },
-        body: { height: "100%", margin: 0, padding: 0, overflow: "hidden" },
-        "#root": { height: "100%", margin: 0, padding: 0, overflow: "hidden" },
-    };
-
     return (
-        <>
+        // Pembungkus layar penuh absolut
+        <Box sx={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, m: 0, p: 0, display: "flex", overflow: "hidden" }}>
             <CssBaseline />
-            <GlobalStyles styles={globalStyles} />
+
+            {/* --- SISI KIRI (BRANDING - 50% LEBAR) --- */}
             <Box
                 sx={{
-                    height: "100dvh",
-                    width: "100dvw",
-                    display: "flex",
-                    overflow: "hidden",
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
+                    width: { xs: "0%", md: "50%" }, // Sembunyi di HP, 50% di Laptop
+                    display: { xs: "none", md: "flex" },
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, #0056b3 100%)`,
+                    color: "white",
+                    position: "relative",
                 }}
             >
-                <Grid container sx={{ height: "100%", width: "100%", m: 0, p: 0 }}>
-                    {/* Kiri - Branding (sembunyikan di mobile) */}
-                    <Grid
-                        item={true} // ✅ eksplisit boolean, hilangkan warning
-                        xs={12}
-                        md={6}
-                        sx={{
-                            display: { xs: "none", md: "flex" },
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, #0056b3 100%)`,
-                            color: "white",
-                            height: "100%",
-                            position: "relative",
-                            overflow: "hidden",
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                backgroundImage: `
-                                    radial-gradient(circle at 20% 40%, rgba(255,255,255,0.15) 2px, transparent 2px),
-                                    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 1px, transparent 1px)
-                                `,
-                                backgroundSize: "40px 40px, 30px 30px",
-                            }}
-                        />
-                        <Box sx={{ maxWidth: 480, zIndex: 1, textAlign: "center", px: 4 }}>
-                            <Box
-                                sx={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    bgcolor: alpha(theme.palette.common.white, 0.15),
-                                    borderRadius: 2,
-                                    p: 1.5,
-                                    mb: 3,
-                                    backdropFilter: "blur(8px)",
-                                }}
-                            >
-                                <School sx={{ fontSize: 40, mr: 1 }} />
-                                <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                                    EduLearn<span style={{ fontWeight: 400 }}>.AI</span>
-                                </Typography>
-                            </Box>
-                            <Typography
-                                variant="h3"
-                                sx={{ fontWeight: 700, mb: 2, fontSize: { md: "2.5rem", lg: "3rem" } }}
-                            >
-                                Kelola Pembelajaran
-                            </Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 400, mb: 4, opacity: 0.9 }}>
-                                Platform administrasi lengkap untuk kursus, siswa, dan materi belajar.
-                            </Typography>
-                            <Box sx={{ display: "flex", gap: 3, justifyContent: "center", mt: 4 }}>
-                                <Box sx={{ textAlign: "center" }}>
-                                    <DashboardIcon sx={{ fontSize: 40, mb: 1 }} />
-                                    <Typography variant="body2">Dashboard Analitik</Typography>
-                                </Box>
-                                <Box sx={{ textAlign: "center" }}>
-                                    <Security sx={{ fontSize: 40, mb: 1 }} />
-                                    <Typography variant="body2">Akses Aman</Typography>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Grid>
+                {/* Background Pattern */}
+                <Box
+                    sx={{
+                        position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1,
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E")`,
+                        backgroundRepeat: "repeat", backgroundSize: "40px",
+                    }}
+                />
+                <Box sx={{ maxWidth: 480, zIndex: 1, textAlign: "center", px: 4 }}>
+                    <Box sx={{ display: "inline-flex", alignItems: "center", bgcolor: alpha(theme.palette.common.white, 0.15), borderRadius: 2, p: 1.5, mb: 3 }}>
+                        <School sx={{ fontSize: 40, mr: 1 }} />
+                        <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                            EduLearn<span style={{ fontWeight: 400 }}>.AI</span>
+                        </Typography>
+                    </Box>
+                    <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, fontSize: { md: "2.5rem", lg: "3rem" } }}>
+                        Kelola Pembelajaran
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 400, mb: 4, opacity: 0.9 }}>
+                        Platform administrasi lengkap untuk kursus, siswa, dan materi belajar.
+                    </Typography>
+                    <Box sx={{ display: "flex", gap: 3, justifyContent: "center", mt: 4 }}>
+                        <Box sx={{ textAlign: "center" }}><DashboardIcon sx={{ fontSize: 40, mb: 1 }} /><Typography variant="body2">Dashboard Analitik</Typography></Box>
+                        <Box sx={{ textAlign: "center" }}><Security sx={{ fontSize: 40, mb: 1 }} /><Typography variant="body2">Akses Aman</Typography></Box>
+                    </Box>
+                </Box>
+            </Box>
 
-                    {/* Kanan - Form Login */}
-                    <Grid
-                        item={true}
-                        xs={12}
-                        md={6}
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            bgcolor: "background.paper",
-                            height: "100%",
-                        }}
-                    >
-                        <Box
+            {/* --- SISI KANAN (FORM LOGIN - 50% LEBAR) --- */}
+            <Box
+                sx={{
+                    width: { xs: "100%", md: "50%" }, // 100% di HP, 50% di Laptop
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    bgcolor: "#ffffff",
+                }}
+            >
+                <Box sx={{ width: "100%", maxWidth: 460, px: 6 }}>
+                    <Box sx={{ textAlign: "center", mb: 4 }}>
+                        <Typography variant="h4" fontWeight={700} gutterBottom>
+                            Selamat Datang Kembali
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            Masukkan kredensial administrator Anda
+                        </Typography>
+                    </Box>
+
+                    <form onSubmit={handleLogin}>
+                        <TextField
+                            fullWidth
+                            label="Alamat Email"
+                            variant="outlined"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            margin="normal"
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Email sx={{ color: 'text.secondary' }} />
+                                        </InputAdornment>
+                                    ),
+                                }
+                            }}
+                            sx={{ mb: 2 }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Kata Sandi"
+                            variant="outlined"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            margin="normal"
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Lock sx={{ color: 'text.secondary' }} />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }
+                            }}
+                            sx={{ mb: 4 }}
+                        />
+
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            disabled={isLoading}
                             sx={{
-                                width: "100%",
-                                maxWidth: 460,
-                                px: 4,
-                                py: 4,
-                                mx: 2,
-                                borderRadius: 4,
-                                bgcolor: alpha(theme.palette.background.paper, 0.85),
-                                backdropFilter: "blur(10px)",
-                                boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-                                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                                py: 1.5,
+                                fontSize: "1rem",
+                                fontWeight: 600,
+                                textTransform: "none",
+                                borderRadius: 2,
+                                boxShadow: "0 8px 16px rgba(0,138,94,0.15)",
+                                background: `linear-gradient(90deg, ${theme.palette.primary.main}, #00a86b)`,
+                                "&:hover": {
+                                    background: `linear-gradient(90deg, #006e4d, ${theme.palette.primary.dark})`,
+                                },
                             }}
                         >
-                            <Box sx={{ textAlign: "center", mb: 4 }}>
-                                <Typography variant="h4" fontWeight={700} gutterBottom>
-                                    Selamat Datang Kembali
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Masukkan kredensial administrator Anda
-                                </Typography>
-                            </Box>
+                            {isLoading ? <CircularProgress size={24} color="inherit" /> : "Masuk ke Dashboard"}
+                        </Button>
 
-                            <form onSubmit={handleLogin}>
-                                <TextField
-                                    fullWidth
-                                    label="Alamat Email"
-                                    variant="outlined"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    margin="normal"
-                                    slotProps={{
-                                        input: {
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <Email color="action" />
-                                                </InputAdornment>
-                                            ),
-                                        },
-                                    }}
-                                    sx={{ mb: 2 }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    label="Kata Sandi"
-                                    variant="outlined"
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    margin="normal"
-                                    slotProps={{
-                                        input: {
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <Lock color="action" />
-                                                </InputAdornment>
-                                            ),
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        },
-                                    }}
-                                    sx={{ mb: 3 }}
-                                />
-
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    disabled={isLoading}
-                                    sx={{
-                                        py: 1.5,
-                                        fontSize: "1rem",
-                                        fontWeight: 600,
-                                        textTransform: "none",
-                                        borderRadius: 2,
-                                        boxShadow: "0 8px 16px rgba(0,138,94,0.15)",
-                                        background: `linear-gradient(90deg, ${theme.palette.primary.main}, #00a86b)`,
-                                        transition: "transform 0.2s",
-                                        "&:hover": {
-                                            background: `linear-gradient(90deg, #006e4d, ${theme.palette.primary.dark})`,
-                                            transform: "translateY(-2px)",
-                                        },
-                                    }}
-                                >
-                                    {isLoading ? <CircularProgress size={24} color="inherit" /> : "Masuk ke Dashboard"}
-                                </Button>
-
-                                <Typography variant="caption" color="text.secondary" align="center" sx={{ display: "block", mt: 3 }}>
-                                    Gunakan <strong>admin@example.com</strong> / <strong>admin123</strong> untuk demo (dummy)
-                                </Typography>
-                            </form>
-                        </Box>
-                    </Grid>
-                </Grid>
+                        <Typography variant="caption" color="text.secondary" align="center" sx={{ display: "block", mt: 4 }}>
+                            Gunakan <strong>admin@example.com</strong> / <strong>admin123</strong> untuk demo (dummy)
+                        </Typography>
+                    </form>
+                </Box>
             </Box>
-        </>
+        </Box>
     );
 }

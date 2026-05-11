@@ -1,46 +1,54 @@
-import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
     Box, IconButton, InputBase,
     Avatar, Menu, MenuItem, Divider, Badge
-} from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import SearchIcon from '@mui/icons-material/Search'
-import NotificationsIcon from '@mui/icons-material/Notifications'
-import StorageIcon from '@mui/icons-material/Storage'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import SettingsIcon from '@mui/icons-material/Settings'
-import LogoutIcon from '@mui/icons-material/Logout'
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
-// Map path → label halaman
-const PAGE_LABELS = {
-    '/dashboard': 'Dashboard',
-    '/reservations': 'Reservations',
-    '/patients': 'Daftar Pasien',
-    '/doctors': 'Manajemen Dokter',
-    '/schedules': 'Manajemen Jadwal',
-    '/knowledge': 'AI Knowledge',
-    '/services': 'Layanan Klinik',
-    '/settings': 'Pengaturan',
-}
+// Map path → label halaman (Disesuaikan dengan E-Learning)
+const PAGE_LABELS: Record<string, string> = {
+    '/dashboard': 'Dashboard Utama',
+    '/users': 'Manajemen Siswa',
+    '/courses': 'Kelola Kursus',
+    '/exams': 'Data Ujian & Nilai',
+    '/notifications': 'Riwayat Notifikasi',
+    '/settings': 'Pengaturan Sistem',
+};
 
-export default function Navbar({ onMenuClick, onLogout, pathname }) {
-    const location = useLocation()
-    const currentPath = pathname || location.pathname
+export default function Navbar({ onMenuClick, onLogout }: { onMenuClick?: () => void, onLogout?: () => void }) {
+    const location = useLocation();
+
+    // Cari judul halaman berdasarkan URL saat ini
     const pageLabel = Object.entries(PAGE_LABELS).find(([key]) =>
-        currentPath.startsWith(key)
-    )?.[1] || 'Dashboard'
+        location.pathname.startsWith(key)
+    )?.[1] || 'Dashboard';
 
-    const [anchorEl, setAnchorEl] = useState(null)
-    const profileOpen = Boolean(anchorEl)
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const profileOpen = Boolean(anchorEl);
+
+    // Fungsi internal untuk logout jika onLogout tidak dikirim dari luar
+    const handleLogout = () => {
+        if (onLogout) {
+            onLogout();
+        } else {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+    };
 
     return (
         <Box sx={{
-            height: 72,
-            bgcolor: 'white',
+            height: 80, // Tinggi disamakan dengan header Sidebar
+            bgcolor: '#ffffff',
             borderBottom: '1px solid #f1f5f9',
             display: 'flex', alignItems: 'center',
-            px: 3, gap: 2,
+            px: 4, gap: 2,
             flexShrink: 0,
             position: 'sticky', top: 0, zIndex: 100,
         }}>
@@ -54,18 +62,18 @@ export default function Navbar({ onMenuClick, onLogout, pathname }) {
                     p: 1,
                 }}
             >
-                <MenuIcon sx={{ fontSize: 20, color: '#64748b' }} />
+                <MenuIcon sx={{ fontSize: 22, color: '#64748b' }} />
             </IconButton>
 
-            {/* ── Page Title ─────────────────────────────────────── */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
+            {/* ── Judul Halaman Dinamis ─────────────────────────────────────── */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
                 <Box sx={{
-                    width: 4, height: 22, bgcolor: '#059669',
+                    width: 5, height: 24, bgcolor: '#008A5E',
                     borderRadius: 4,
                 }} />
                 <Box sx={{
-                    fontWeight: 900, fontSize: 15,
-                    color: '#0f172a', textTransform: 'uppercase',
+                    fontWeight: 900, fontSize: 18,
+                    color: '#1e293b', textTransform: 'uppercase',
                     letterSpacing: 0.5,
                 }}>
                     {pageLabel}
@@ -74,145 +82,130 @@ export default function Navbar({ onMenuClick, onLogout, pathname }) {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            {/* ── Search ─────────────────────────────────────────── */}
+            {/* ── Search Bar Modern ─────────────────────────────────────────── */}
             <Box sx={{
-                display: { xs: 'none', sm: 'flex' },
+                display: { xs: 'none', md: 'flex' },
                 alignItems: 'center', gap: 1,
-                bgcolor: '#F0FDF8', border: '1px solid #BBF7D0',
-                px: 2, py: 0.8, borderRadius: '12px',
+                bgcolor: '#f8fafc', border: '1px solid transparent',
+                px: 2, py: 1, borderRadius: '100px',
+                transition: 'all 0.2s',
+                '&:hover': { border: '1px solid #e2e8f0' },
             }}>
-                <SearchIcon sx={{ color: '#059669', fontSize: 18 }} />
+                <SearchIcon sx={{ color: '#94a3b8', fontSize: 20 }} />
                 <InputBase
-                    placeholder="Global search..."
-                    sx={{ fontSize: 13, color: '#334155', width: 160 }}
+                    placeholder="Cari materi atau siswa..."
+                    sx={{ fontSize: 14, color: '#334155', width: 220, fontWeight: 500 }}
                 />
             </Box>
 
-            {/* ── Sync AI Button ─────────────────────────────────── */}
-            <Box
-                component="button"
-                sx={{
-                    display: { xs: 'none', sm: 'flex' },
-                    alignItems: 'center', gap: 1,
-                    bgcolor: '#059669', color: 'white',
-                    border: 'none', cursor: 'pointer',
-                    px: 2.5, py: 1, borderRadius: '12px',
-                    fontSize: 12, fontWeight: 800,
-                    letterSpacing: 0.5,
-                    boxShadow: '0 2px 8px rgba(5,150,105,0.3)',
-                    transition: 'all 0.2s',
-                    '&:hover': { bgcolor: '#047857' },
-                }}
-            >
-                <StorageIcon sx={{ fontSize: 16 }} />
-                SYNC AI
-            </Box>
-
-            {/* ── Notifications ──────────────────────────────────── */}
+            {/* ── Tombol Notifikasi ──────────────────────────────────── */}
             <IconButton sx={{
                 bgcolor: '#F0FDF8',
                 border: '1px solid #BBF7D0',
-                borderRadius: '12px', p: 1,
+                borderRadius: '14px', p: 1.2, ml: 2,
+                transition: 'all 0.2s',
                 '&:hover': { bgcolor: '#DCFCE7' },
             }}>
-                <Badge badgeContent={3} color="error" sx={{
-                    '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 }
+                <Badge badgeContent={2} color="error" sx={{
+                    '& .MuiBadge-badge': { fontSize: 10, minWidth: 18, height: 18, fontWeight: 'bold' }
                 }}>
-                    <NotificationsIcon sx={{ fontSize: 20, color: '#059669' }} />
+                    <NotificationsIcon sx={{ fontSize: 22, color: '#008A5E' }} />
                 </Badge>
             </IconButton>
 
-            {/* ── Admin Profile ──────────────────────────────────── */}
+            {/* ── Profil Admin (Dropdown Trigger) ──────────────────────────────────── */}
             <Box
                 onClick={(e) => setAnchorEl(e.currentTarget)}
                 sx={{
                     display: 'flex', alignItems: 'center', gap: 1.5,
-                    pl: 2, borderLeft: '1px solid #f1f5f9',
+                    pl: 3, ml: 1, borderLeft: '2px solid #f1f5f9',
                     cursor: 'pointer',
+                    '&:hover .dropdown-icon': { color: '#008A5E' }
                 }}
             >
                 <Avatar sx={{
-                    width: 36, height: 36,
-                    bgcolor: '#0A1C14',
-                    fontSize: 12, fontWeight: 800,
-                    color: '#10b981',
+                    width: 40, height: 40,
+                    bgcolor: 'linear-gradient(135deg, #008A5E 0%, #004D40 100%)',
+                    fontSize: 14, fontWeight: 800,
+                    color: 'white',
+                    boxShadow: '0 2px 8px rgba(0, 138, 94, 0.3)'
                 }}>AD</Avatar>
                 <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                    <Box sx={{ fontSize: 13, fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>
-                        ADMIN
+                    <Box sx={{ fontSize: 14, fontWeight: 800, color: '#1e293b', lineHeight: 1.2 }}>
+                        Admin Utama
                     </Box>
-                    <Box sx={{ fontSize: 10, color: '#059669', fontWeight: 700, mt: 0.4 }}>
+                    <Box sx={{ fontSize: 10, color: '#008A5E', fontWeight: 800, mt: 0.2, letterSpacing: 0.5 }}>
                         SUPER ADMIN
                     </Box>
                 </Box>
-                <KeyboardArrowDownIcon sx={{
-                    fontSize: 18, color: '#94a3b8',
+                <KeyboardArrowDownIcon className="dropdown-icon" sx={{
+                    fontSize: 20, color: '#94a3b8',
                     transform: profileOpen ? 'rotate(180deg)' : 'none',
-                    transition: 'transform 0.2s',
+                    transition: 'all 0.2s',
                 }} />
             </Box>
 
-            {/* ── Profile Dropdown ───────────────────────────────── */}
+            {/* ── Dropdown Menu Profil ───────────────────────────────── */}
             <Menu
                 anchorEl={anchorEl}
                 open={profileOpen}
                 onClose={() => setAnchorEl(null)}
                 PaperProps={{
                     sx: {
-                        mt: 1.5, width: 200,
+                        mt: 2, width: 240,
                         borderRadius: '16px',
                         border: '1px solid #f1f5f9',
-                        boxShadow: '0 16px 40px rgba(0,0,0,0.12)',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
                         overflow: 'hidden',
                     }
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                {/* Header dropdown */}
                 <Box sx={{
-                    bgcolor: '#0A1C14', px: 2, py: 2,
+                    bgcolor: '#f8fafc', px: 2.5, py: 2,
                     display: 'flex', alignItems: 'center', gap: 1.5,
+                    borderBottom: '1px solid #f1f5f9'
                 }}>
                     <Avatar sx={{
-                        width: 34, height: 34,
-                        bgcolor: 'rgba(16,185,129,0.2)',
-                        fontSize: 12, fontWeight: 800, color: '#10b981',
+                        width: 36, height: 36,
+                        bgcolor: 'rgba(0,138,94,0.15)',
+                        fontSize: 13, fontWeight: 800, color: '#008A5E',
                     }}>AD</Avatar>
                     <Box>
-                        <Box sx={{ fontSize: 13, fontWeight: 700, color: 'white', lineHeight: 1 }}>
-                            Admin
+                        <Box sx={{ fontSize: 14, fontWeight: 800, color: '#1e293b', lineHeight: 1 }}>
+                            Admin Utama
                         </Box>
-                        <Box sx={{ fontSize: 10, color: '#10b981', mt: 0.4 }}>
-                            admin@klinik.ai
+                        <Box sx={{ fontSize: 11, color: '#64748b', mt: 0.5, fontWeight: 500 }}>
+                            admin@edulearn.ai
                         </Box>
                     </Box>
                 </Box>
 
-                <Box sx={{ p: 0.75 }}>
+                <Box sx={{ p: 1 }}>
                     <MenuItem
-                        onClick={() => setAnchorEl(null)}
-                        sx={{ borderRadius: '10px', fontSize: 13, fontWeight: 500, gap: 1.5, color: '#475569' }}
+                        onClick={() => { setAnchorEl(null); /* Navigate to settings */ }}
+                        sx={{ borderRadius: '10px', fontSize: 14, fontWeight: 600, gap: 1.5, color: '#475569', py: 1.2 }}
                     >
-                        <SettingsIcon sx={{ fontSize: 17, color: '#059669' }} />
-                        Pengaturan
+                        <SettingsIcon sx={{ fontSize: 18, color: '#008A5E' }} />
+                        Pengaturan Sistem
                     </MenuItem>
 
-                    <Divider sx={{ my: 0.5 }} />
+                    <Divider sx={{ my: 1, borderColor: '#f1f5f9' }} />
 
                     <MenuItem
-                        onClick={() => { setAnchorEl(null); onLogout() }}
+                        onClick={() => { setAnchorEl(null); handleLogout(); }}
                         sx={{
-                            borderRadius: '10px', fontSize: 13, fontWeight: 600,
-                            gap: 1.5, color: '#ef4444',
-                            '&:hover': { bgcolor: '#fff1f2' },
+                            borderRadius: '10px', fontSize: 14, fontWeight: 700,
+                            gap: 1.5, color: '#ef4444', py: 1.2,
+                            '&:hover': { bgcolor: '#fef2f2' },
                         }}
                     >
-                        <LogoutIcon sx={{ fontSize: 17 }} />
-                        Logout
+                        <LogoutIcon sx={{ fontSize: 18 }} />
+                        Keluar Akun
                     </MenuItem>
                 </Box>
             </Menu>
         </Box>
-    )
+    );
 }
