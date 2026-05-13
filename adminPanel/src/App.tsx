@@ -8,6 +8,7 @@ import Courses from "./pages/courses";
 import Users from "./pages/users";
 import Quiz from "./pages/quiz";
 import Notifications from "./pages/notifiications";
+import Settings from "./pages/settings";
 
 import { Box, Typography, Button, Container, Grid, useTheme, CssBaseline, keyframes, alpha } from "@mui/material";
 import { School, ArrowForward, AutoAwesome, Speed, Security, Storage, Language, Code } from "@mui/icons-material";
