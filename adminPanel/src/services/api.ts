@@ -1,13 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API = axios.create({
-    baseURL: 'http://localhost:5000/api', // Sesuaikan dengan port gateway/backend kamu
+    // WAJIB: IP Laptop 1 (Temanmu)
+    baseURL: "http://172.27.65.26",
 });
 
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
+// Tambahkan interceptor agar token selalu dikirim
+API.interceptors.request.use((req) => {
+    const token = localStorage.getItem("token");
+    if (token) req.headers.Authorization = `Bearer ${token}`;
+    return req;
 });
 
 export default API;

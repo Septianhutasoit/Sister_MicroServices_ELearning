@@ -9,6 +9,7 @@ import Users from "./pages/users";
 import Quiz from "./pages/quiz";
 import Notifications from "./pages/notifiications";
 import Settings from "./pages/settings";
+import Register from "./pages/register";
 
 import { Box, Typography, Button, Container, Grid, useTheme, CssBaseline, keyframes } from "@mui/material";
 import { School, ArrowForward, AutoAwesome, Speed, Security, Storage, Language, Code } from "@mui/icons-material";
@@ -217,6 +218,7 @@ function App() {
 
         {/* 2. RUTE LOGIN KHUSUS ADMIN */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} /> {/* 👈 RUTE BARU UNTUK REGISTER */}
 
         {/* 3. RUTE ADMIN PANEL (Dibungkus Layout) */}
         <Route element={<DashboardLayout />}>
