@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, Typography } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SchoolIcon from '@mui/icons-material/School';
 import PeopleIcon from '@mui/icons-material/People';
@@ -14,7 +14,7 @@ const menuItems = [
     { text: 'Data Siswa', path: '/users', icon: <PeopleIcon sx={{ fontSize: 20 }} /> },
     { text: 'Kelola Kursus', path: '/courses', icon: <SchoolIcon sx={{ fontSize: 20 }} /> },
     { text: 'Data Ujian', path: '/exams', icon: <AssignmentIcon sx={{ fontSize: 20 }} /> },
-    { text: 'Notifikasi (Event)', path: '/notifications', icon: <NotificationsActiveIcon sx={{ fontSize: 20 }} /> },
+    { text: 'Notifikasi', path: '/notifications', icon: <NotificationsActiveIcon sx={{ fontSize: 20 }} /> },
     { text: 'Pengaturan', path: '/settings', icon: <SettingsIcon sx={{ fontSize: 20 }} /> },
 ];
 
@@ -23,7 +23,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        window.location.href = '/login'; // Arahkan kembali ke halaman Login
+        window.location.href = '/login'; // Arahkan ke halaman login
     };
 
     return (
@@ -114,74 +114,70 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             </Box>
 
             {/* --- MENU LIST --- */}
-            <List sx={{ px: 2, flexGrow: 1, pt: 0, pb: 0 }}>
+            <List sx={{ flexGrow: 1, pt: 0, pb: 0 }}>
                 {menuItems.map((item) => {
                     const isActive = location.pathname.startsWith(item.path);
                     return (
-                        <ListItem
-                            key={item.text}
-                            component={Link}
-                            to={item.path}
-                            onClick={onClose}
-                            sx={{
-                                mb: 0.5,
-                                borderRadius: '12px',
-                                px: 2,
-                                py: 1.2,
-                                transition: 'all 0.2s',
-                                bgcolor: isActive ? '#008A5E' : 'transparent',
-                                color: isActive ? 'white' : '#64748b',
-                                boxShadow: isActive ? '0 4px 12px rgba(0, 138, 94, 0.25)' : 'none',
-                                '&:hover': {
-                                    bgcolor: isActive ? '#007A53' : '#f8fafc',
-                                    color: isActive ? 'white' : '#0f172a',
-                                    '& .MuiListItemIcon-root': { color: isActive ? 'white' : '#008A5E' },
-                                },
-                            }}
-                        >
-                            <ListItemIcon
+                        <ListItem key={item.text} disablePadding sx={{ display: 'block', mb: 0.5, px: 2 }}>
+                            <ListItemButton
+                                component={Link}
+                                to={item.path}
+                                onClick={onClose}
                                 sx={{
-                                    minWidth: 40,
-                                    color: isActive ? 'rgba(255,255,255,0.9)' : '#94a3b8',
+                                    minHeight: 44,
+                                    borderRadius: '12px',
+                                    transition: 'all 0.2s',
+                                    bgcolor: isActive ? '#008A5E !important' : 'transparent',
+                                    color: isActive ? 'white' : '#64748b',
+                                    boxShadow: isActive ? '0 4px 12px rgba(0, 138, 94, 0.25)' : 'none',
+                                    '&:hover': {
+                                        bgcolor: isActive ? '#007A53 !important' : '#f8fafc',
+                                        color: isActive ? 'white' : '#0f172a',
+                                        '& .MuiListItemIcon-root': { color: isActive ? 'white' : '#008A5E' },
+                                    },
                                 }}
                             >
-                                {item.icon}
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={item.text}
-                                primaryTypographyProps={{
-                                    fontSize: 14,
-                                    fontWeight: isActive ? 700 : 500,
-                                }}
-                            />
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth: 40,
+                                        color: isActive ? 'white' : '#94a3b8',
+                                    }}
+                                >
+                                    {item.icon}
+                                </ListItemIcon>
+                                <Typography sx={{ fontSize: 14, fontWeight: isActive ? 700 : 500 }}>
+                                    {item.text}
+                                </Typography>
+                            </ListItemButton>
                         </ListItem>
                     );
                 })}
             </List>
 
             {/* --- LOGOUT BUTTON --- */}
-            <Box sx={{ px: 2, pb: 3, mt: 2 }}>
-                <ListItem
-                    button
-                    onClick={handleLogout}
-                    sx={{
-                        borderRadius: '12px',
-                        px: 2,
-                        py: 1.5,
-                        color: '#64748b',
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                            bgcolor: '#fef2f2',
-                            color: '#ef4444',
-                            '& .MuiListItemIcon-root': { color: '#ef4444' },
-                        },
-                    }}
-                >
-                    <ListItemIcon sx={{ minWidth: 40, color: '#94a3b8' }}>
-                        <LogoutIcon sx={{ fontSize: 20 }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Keluar Aplikasi" primaryTypographyProps={{ fontSize: 14, fontWeight: 600 }} />
-                </ListItem>
+            <Box sx={{ pb: 3, mt: 2 }}>
+                <List>
+                    <ListItem disablePadding sx={{ px: 2 }}>
+                        <ListItemButton
+                            onClick={handleLogout}
+                            sx={{
+                                borderRadius: '12px',
+                                color: '#64748b',
+                                transition: 'all 0.2s',
+                                '&:hover': {
+                                    bgcolor: '#fef2f2',
+                                    color: '#ef4444',
+                                    '& .MuiListItemIcon-root': { color: '#ef4444' },
+                                },
+                            }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 40, color: '#94a3b8' }}>
+                                <LogoutIcon sx={{ fontSize: 20 }} />
+                            </ListItemIcon>
+                            <Typography sx={{ fontSize: 14, fontWeight: 600 }}>Keluar Aplikasi</Typography>
+                        </ListItemButton>
+                    </ListItem>
+                </List>
             </Box>
         </Box>
     );
