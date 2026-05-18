@@ -109,20 +109,8 @@ export default function StudentNavbar() {
 
                         {/* ── Brand ───────────────────────────────── */}
                         <Link href="/dashboard" className="flex items-center gap-3 shrink-0">
-                            <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-white shadow-md shrink-0">
-                                {!logoError ? (
-                                    <Image
-                                        src="/images/logo.png"
-                                        alt="EduLearn Logo"
-                                        width={40} height={40}
-                                        className="object-cover w-full h-full"
-                                        onError={() => setLogoError(true)}
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                                        <BookOpen size={20} className="text-white" />
-                                    </div>
-                                )}
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md shrink-0 border border-emerald-400">
+                                <BookOpen size={20} className="text-white" strokeWidth={2.5} />
                             </div>
                             <div className="flex flex-col leading-tight">
                                 <span className="text-lg font-black tracking-tight text-white">
