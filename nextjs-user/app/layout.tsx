@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "Platform E-Learning Microservices untuk Siswa — Belajar, Ujian, dan Raih Pencapaianmu.",
   keywords: ["e-learning", "kursus online", "ujian", "sertifikasi", "siswa"],
   authors: [{ name: "EduLearn Team" }],
-  themeColor: "#0c0f1a",
+  themeColor: "#f0fdf4",
 };
 
 export default function RootLayout({
@@ -36,53 +36,100 @@ export default function RootLayout({
         className={`
           ${geist.variable} ${geistMono.variable}
           font-[family-name:var(--font-geist)]
-          bg-[#0c0f1a] text-white min-h-screen flex flex-col
+          bg-[#f8fafb] text-slate-800 min-h-screen flex flex-col
           antialiased
         `}
       >
-        {/* ── Ambient background glow ────────────────────────────
-            Efek cahaya ambient agar halaman tidak terasa flat.
-            Diletakkan di belakang semua konten (z-0).
+        {/* ── Ambient background — bersih, putih profesional ──────
+            Warna dominan putih dengan sentuhan emerald sangat lembut.
+            Cocok untuk platform edukasi yang serius & terpercaya.
         ──────────────────────────────────────────────────────── */}
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          {/* Top-left emerald glow */}
-          <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-emerald-600/10 blur-[120px]" />
-          {/* Bottom-right teal glow */}
-          <div className="absolute -bottom-60 -right-40 w-[700px] h-[700px] rounded-full bg-teal-500/8 blur-[140px]" />
-          {/* Subtle center glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] rounded-full bg-emerald-900/10 blur-[100px]" />
+          {/* Top-left: emerald mist sangat lembut */}
+          <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-emerald-100/60 blur-[120px]" />
+          {/* Bottom-right: teal mist */}
+          <div className="absolute -bottom-40 -right-32 w-[500px] h-[500px] rounded-full bg-teal-100/50 blur-[100px]" />
+          {/* Center putih — kesan bersih & profesional */}
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-white/80 blur-[80px]" />
+          {/* Noise texture overlay sangat tipis */}
+          <div
+            className="absolute inset-0 opacity-[0.018]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
+              backgroundSize: '200px',
+            }}
+          />
+          {/* Garis grid halus — kesan platform profesional */}
+          <div
+            className="absolute inset-0 opacity-[0.025]"
+            style={{
+              backgroundImage: `linear-gradient(rgba(16,185,129,1) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(16,185,129,1) 1px, transparent 1px)`,
+              backgroundSize: '64px 64px',
+            }}
+          />
         </div>
 
-        {/* ── Navbar (fixed, di atas segalanya) ─────────────── */}
+        {/* ── Navbar floating ────────────────────────────────── */}
         <StudentNavbar />
 
         {/* ── Area konten halaman ───────────────────────────── */}
-        {/*
-          pt-20  → beri ruang agar konten tidak tertutup navbar fixed (h ~80px)
-          flex-grow → isi sisa tinggi layar
-          relative z-10 → di atas ambient glow
-        */}
-        <main className="relative z-10 flex-grow pt-20">
+        <main className="relative z-10 flex-grow pt-[68px]">
           {children}
         </main>
 
-        {/* ── Footer minimal ───────────────────────────────── */}
-        <footer className="relative z-10 border-t border-white/5 py-6 mt-auto">
-          <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-white/25 font-medium">
-            <span>
-              © {new Date().getFullYear()}{" "}
-              <span className="text-emerald-500/60">EduLearn</span>. Semua hak dilindungi.
-            </span>
-            <div className="flex items-center gap-5">
-              <a href="/privacy" className="hover:text-white/50 transition-colors">
-                Kebijakan Privasi
-              </a>
-              <a href="/terms" className="hover:text-white/50 transition-colors">
-                Syarat &amp; Ketentuan
-              </a>
-              <a href="/support" className="hover:text-white/50 transition-colors">
-                Bantuan
-              </a>
+        {/* ── Footer profesional light ──────────────────────── */}
+        <footer className="relative z-10 mt-auto">
+          {/* Top border gradient */}
+          <div className="h-px bg-gradient-to-r from-transparent via-emerald-200 to-transparent" />
+
+          <div className="bg-white/70 backdrop-blur-sm">
+            <div className="max-w-6xl mx-auto px-6 py-5">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+
+                {/* Brand */}
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col leading-tight">
+                    <span className="text-[13px] font-black tracking-tight text-slate-700">
+                      Edu<span className="text-emerald-500">Learn</span>
+                    </span>
+                    <span className="text-[9px] font-medium text-slate-400 tracking-wider uppercase">
+                      Student Portal
+                    </span>
+                  </div>
+                </div>
+
+                {/* Copyright */}
+                <span className="text-[11px] text-slate-400 font-medium">
+                  © {new Date().getFullYear()}{" "}
+                  <span className="text-emerald-500 font-semibold">EduLearn</span>.
+                  Semua hak dilindungi.
+                </span>
+
+                {/* Links */}
+                <div className="flex items-center gap-4">
+                  {[
+                    { href: '/privacy', label: 'Kebijakan Privasi' },
+                    { href: '/terms', label: 'Syarat & Ketentuan' },
+                    { href: '/support', label: 'Bantuan' },
+                  ].map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="text-[11px] text-slate-400 font-medium hover:text-emerald-600 transition-colors duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+
+              </div>
             </div>
           </div>
         </footer>
