@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authAPI } from "../services/api";
-import type { AuthResponse } from "../types";
+import { authAPI } from "../services/api"; // Memastikan mengarah ke IP Laptop 1
 import {
     Box, Button, TextField, Typography, InputAdornment, IconButton,
     CircularProgress, alpha, useTheme, CssBaseline, Alert, Fade,
@@ -26,28 +25,55 @@ export default function Login() {
         e.preventDefault();
         setIsLoading(true);
         setError("");
+
         try {
-            const res = await authAPI.post<{ data: AuthResponse }>("/auth/admin/login", { email, password });
-            localStorage.setItem("token", res.data.data.token);
+            // 1. Request ke API Gateway Laptop 1
+            // Pastikan baseURL di services/api.ts sudah menggunakan IP Laptop 1 (ex: 172.27.80.144)
+            const res = await authAPI.post("/auth/login", { email, password });
+
+            // 2. Destructuring Data (Sesuai standar respon Microservices)
+            const { token, user } = res.data.data;
+
+            // 3. PROTEKSI ROLE: Cek apakah user adalah admin
+            if (user.role !== 'admin') {
+                setError("Akses Ditolak! Anda mencoba masuk ke Portal Admin dengan akun Siswa.");
+                setIsLoading(false);
+                return;
+            }
+
+            // 4. Simpan Kredensial ke LocalStorage
+            localStorage.setItem("token", token);
+            localStorage.setItem("admin_name", user.name);
+            localStorage.setItem("admin_role", user.role);
+            localStorage.setItem("admin_email", user.email);
+
+            // 5. Redirect ke Dashboard Admin
             navigate("/dashboard");
-        } catch {
-            // Bypass demo
+
+        } catch (err: any) {
+            console.error("Login Error:", err);
+
+            // Mengambil pesan error asli dari backend
+            const serverMessage = err.response?.data?.message || "Gagal terhubung ke Laptop 1. Pastikan server aktif.";
+            setError(serverMessage);
+
+            // --- Demo Fallback (Hapus jika sudah fix konek ke Laptop 1) ---
             if (email === "admin@example.com" && password === "admin123") {
-                localStorage.setItem("token", "dummy_token_123");
+                localStorage.setItem("token", "dummy_admin_token");
+                localStorage.setItem("admin_name", "Admin Demo");
                 navigate("/dashboard");
                 return;
             }
-            setError("Email atau password salah. Silakan coba kembali.");
         } finally {
             setIsLoading(false);
         }
     };
 
     const stats = [
-        { icon: People, value: "10K+", label: "Pengguna Aktif", color: "#008A5E" },
-        { icon: School, value: "500+", label: "Kursus Tersedia", color: "#2BAE82" },
-        { icon: Assignment, value: "95%", label: "Kepuasan", color: "#00A86B" },
-        { icon: TrendingUp, value: "150%", label: "Pertumbuhan", color: "#3B82F6" },
+        { icon: People, value: "12K+", label: "Total Siswa", color: "#008A5E" },
+        { icon: School, value: "48", label: "Kursus Aktif", color: "#2BAE82" },
+        { icon: Assignment, value: "92%", label: "Tingkat Kelulusan", color: "#00A86B" },
+        { icon: TrendingUp, value: "24/7", label: "System Uptime", color: "#3B82F6" },
     ];
 
     return (
@@ -55,132 +81,120 @@ export default function Login() {
             <CssBaseline />
             <Box sx={{ position: "absolute", inset: 0, opacity: .03, backgroundImage: `radial-gradient(${theme.palette.primary.main} 2px, transparent 2px)`, backgroundSize: "40px 40px", pointerEvents: "none" }} />
 
-            {/* ── KIRI: BRANDING ── */}
+            {/* ── KIRI: BRANDING (ADMIN PANEL STYLE) ── */}
             <Box sx={{
                 width: { xs: "0%", lg: "50%" }, display: { xs: "none", lg: "flex" },
                 flexDirection: "column", justifyContent: "center", alignItems: "center",
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, #006E4D 50%, #004D35 100%)`,
+                background: `linear-gradient(135deg, #0f172a 0%, #1e293b 100%)`, // Warna admin lebih gelap & profesional
                 color: "white", position: "relative", overflow: "hidden",
             }}>
-                <Box sx={{ position: "absolute", top: "-20%", right: "-20%", width: "80%", height: "80%", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)", animation: "pulse 8s ease-in-out infinite", "@keyframes pulse": { "0%,100%": { transform: "scale(1)", opacity: .5 }, "50%": { transform: "scale(1.1)", opacity: .8 } } }} />
-                <Box sx={{ position: "absolute", bottom: "-20%", left: "-20%", width: "70%", height: "70%", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)", animation: "pulse 10s ease-in-out infinite reverse" }} />
+                <Box sx={{ position: "absolute", top: "-20%", right: "-20%", width: "80%", height: "80%", borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)" }} />
 
                 <Box sx={{ maxWidth: 520, zIndex: 1, textAlign: "center", px: 4 }}>
                     <Fade in timeout={1000}>
-                        <Box sx={{ display: "inline-flex", alignItems: "center", justifyContent: "center", mb: 4 }}>
-                            <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1.5, bgcolor: alpha(theme.palette.common.white, .15), backdropFilter: "blur(10px)", borderRadius: 3, p: 2, border: `1px solid ${alpha(theme.palette.common.white, .2)}` }}>
-                                <Box sx={{ bgcolor: "white", color: theme.palette.primary.main, p: 1.5, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <School sx={{ fontSize: 32 }} />
-                                </Box>
-                                <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: -.5 }}>EduLearn</Typography>
+                        <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1.5, mb: 4 }}>
+                            <Box sx={{ bgcolor: "#10b981", color: "white", p: 1.5, borderRadius: 2 }}>
+                                <Security sx={{ fontSize: 32 }} />
                             </Box>
+                            <Typography variant="h4" sx={{ fontWeight: 900 }}>EduAdmin</Typography>
                         </Box>
                     </Fade>
 
                     <Fade in timeout={1200}>
                         <Box>
-                            <Typography variant="h2" sx={{ fontWeight: 800, mb: 2, fontSize: { lg: "2.8rem", xl: "3.5rem" }, lineHeight: 1.2, background: `linear-gradient(135deg, #FFFFFF 0%, ${alpha("#FFFFFF", .8)} 100%)`, backgroundClip: "text", WebkitBackgroundClip: "text", color: "transparent" }}>
-                                Platform E-Learning<br />Terintegrasi
+                            <Typography variant="h2" sx={{ fontWeight: 800, mb: 2, fontSize: "2.8rem", color: "white" }}>
+                                Management <span style={{ color: "#10b981" }}>Portal</span>
                             </Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 400, mb: 5, opacity: .9, lineHeight: 1.6, fontSize: "1.1rem" }}>
-                                Kelola kursus, siswa, dan materi pembelajaran dalam satu dashboard modern.
+                            <Typography variant="h6" sx={{ fontWeight: 400, mb: 5, opacity: .7, lineHeight: 1.6 }}>
+                                Dashboard eksklusif untuk mengelola konten pembelajaran, memantau siswa, dan konfigurasi microservices.
                             </Typography>
                         </Box>
                     </Fade>
 
                     <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 2, mb: 5 }}>
                         {stats.map((stat, i) => (
-                            <Fade in timeout={1400 + i * 100} key={i}>
-                                <Paper elevation={0} sx={{ p: 2, bgcolor: alpha(theme.palette.common.white, .1), backdropFilter: "blur(10px)", borderRadius: 2, border: `1px solid ${alpha(theme.palette.common.white, .15)}`, transition: "transform .3s", "&:hover": { transform: "translateY(-4px)", bgcolor: alpha(theme.palette.common.white, .15) } }}>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, justifyContent: "center" }}>
-                                        <stat.icon sx={{ fontSize: 28, color: alpha("#FFFFFF", .9) }} />
-                                        <Box>
-                                            <Typography variant="h5" sx={{ fontWeight: 800, fontSize: "1.5rem" }}>{stat.value}</Typography>
-                                            <Typography variant="caption" sx={{ opacity: .8 }}>{stat.label}</Typography>
-                                        </Box>
-                                    </Box>
-                                </Paper>
-                            </Fade>
+                            <Paper key={i} elevation={0} sx={{ p: 2, bgcolor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3 }}>
+                                <Typography variant="h5" sx={{ fontWeight: 800, color: "#10b981" }}>{stat.value}</Typography>
+                                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", fontWeight: 600 }}>{stat.label}</Typography>
+                            </Paper>
                         ))}
                     </Box>
 
-                    <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-                        {[
-                            { icon: CheckCircle, label: "Microservices Architecture" },
-                            { icon: Security, label: "Enterprise Security" },
-                            { icon: AutoAwesome, label: "AI-Powered Analytics" },
-                        ].map(({ icon: Icon, label }) => (
-                            <Chip key={label} icon={<Icon sx={{ fontSize: 16 }} />} label={label} sx={{ bgcolor: alpha(theme.palette.common.white, .1), color: "white", "& .MuiChip-icon": { color: alpha("#FFFFFF", .8) } }} />
-                        ))}
+                    <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center" }}>
+                        <Chip label="Node.js Gateway" size="small" sx={{ color: "white", border: "1px solid rgba(255,255,255,0.2)" }} />
+                        <Chip label="PostgreSQL DB" size="small" sx={{ color: "white", border: "1px solid rgba(255,255,255,0.2)" }} />
+                        <Chip label="Admin Verified" size="small" sx={{ color: "#10b981", border: "1px solid #10b981" }} />
                     </Box>
                 </Box>
             </Box>
 
             {/* ── KANAN: FORM ── */}
-            <Box sx={{ width: { xs: "100%", lg: "50%" }, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#FFFFFF", position: "relative", overflow: "auto", py: { xs: 4, sm: 6 } }}>
-                <Box sx={{ width: "100%", maxWidth: 460, px: { xs: 3, sm: 4, md: 6 } }}>
+            <Box sx={{ width: { xs: "100%", lg: "50%" }, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#FFFFFF" }}>
+                <Box sx={{ width: "100%", maxWidth: 420, px: 4 }}>
                     <Fade in timeout={800}>
                         <Box>
-                            {/* Mobile logo */}
-                            <Box sx={{ display: { xs: "flex", lg: "none" }, alignItems: "center", justifyContent: "center", gap: 1.5, mb: 4 }}>
-                                <Box sx={{ bgcolor: theme.palette.primary.main, color: "white", p: 1, borderRadius: 2 }}><School fontSize="small" /></Box>
-                                <Typography variant="h5" sx={{ fontWeight: 800 }}>EduLearn<span style={{ color: theme.palette.primary.main, fontWeight: 400 }}>.AI</span></Typography>
-                            </Box>
-
                             <Box sx={{ textAlign: "center", mb: 4 }}>
-                                <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, background: `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`, backgroundClip: "text", WebkitBackgroundClip: "text", color: "transparent" }}>
-                                    Selamat Datang Kembali
+                                <Typography variant="h4" sx={{ fontWeight: 900, color: "#0f172a", mb: 1 }}>
+                                    Login Administrator
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    Masukkan kredensial Anda untuk mengakses dashboard
+                                    Akses khusus untuk manajemen sistem EduLearn
                                 </Typography>
-                            </Box>
+                            </Box> {/* 👈 Tadi di sini tertulis </div>, sekarang sudah diperbaiki jadi </Box> */}
 
                             {error && (
-                                <Fade in>
-                                    <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }} onClose={() => setError("")}>{error}</Alert>
-                                </Fade>
+                                <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>
                             )}
 
                             <form onSubmit={handleLogin}>
-                                <TextField fullWidth label="Alamat Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required margin="normal"
-                                    InputProps={{ startAdornment: <InputAdornment position="start"><Email sx={{ color: "text.secondary" }} /></InputAdornment> }}
-                                    sx={{ mb: 2, "& .MuiOutlinedInput-root": { transition: "all .3s", "&:hover fieldset": { borderColor: theme.palette.primary.main }, "&.Mui-focused fieldset": { borderColor: theme.palette.primary.main, borderWidth: 2 } } }}
+                                <TextField
+                                    fullWidth label="Email Admin"
+                                    type="email" value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required margin="normal"
+                                    InputProps={{ startAdornment: <InputAdornment position="start"><Email /></InputAdornment> }}
                                 />
-                                <TextField fullWidth label="Kata Sandi" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required margin="normal"
+                                <TextField
+                                    fullWidth label="Kata Sandi"
+                                    type={showPassword ? "text" : "password"}
+                                    value={password} onChange={(e) => setPassword(e.target.value)}
+                                    required margin="normal"
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Lock sx={{ color: "text.secondary" }} /></InputAdornment>,
-                                        endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>,
+                                        startAdornment: <InputAdornment position="start"><Lock /></InputAdornment>,
+                                        endAdornment: <InputAdornment position="end">
+                                            <IconButton onClick={() => setShowPassword(!showPassword)}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
+                                        </InputAdornment>,
                                     }}
-                                    sx={{ mb: 3, "& .MuiOutlinedInput-root": { transition: "all .3s", "&:hover fieldset": { borderColor: theme.palette.primary.main }, "&.Mui-focused fieldset": { borderColor: theme.palette.primary.main, borderWidth: 2 } } }}
                                 />
 
-                                <Button type="submit" fullWidth variant="contained" disabled={isLoading} sx={{ py: 1.5, fontSize: "1rem", fontWeight: 700, textTransform: "none", borderRadius: 2, background: `linear-gradient(90deg, ${theme.palette.primary.main}, #00A86B)`, boxShadow: `0 8px 16px ${alpha(theme.palette.primary.main, .25)}`, transition: "all .3s", "&:hover": { background: `linear-gradient(90deg, #006E4D, ${theme.palette.primary.main})`, transform: "translateY(-2px)", boxShadow: `0 12px 20px ${alpha(theme.palette.primary.main, .35)}` }, "&:active": { transform: "translateY(0)" } }}>
-                                    {isLoading ? <CircularProgress size={24} color="inherit" /> : <><span>Masuk ke Dashboard</span><ArrowForward sx={{ ml: 1, fontSize: 18 }} /></>}
+                                <Button
+                                    type="submit" fullWidth variant="contained"
+                                    disabled={isLoading}
+                                    sx={{
+                                        mt: 4, py: 1.8, borderRadius: 2, fontWeight: 800,
+                                        bgcolor: "#0f172a", "&:hover": { bgcolor: "#1e293b" }
+                                    }}
+                                >
+                                    {isLoading ? <CircularProgress size={24} color="inherit" /> : "Masuk ke Dashboard Admin"}
                                 </Button>
 
-                                <Divider sx={{ my: 3 }}><Typography variant="caption" color="text.secondary">DEMO CREDENTIALS</Typography></Divider>
+                                <Divider sx={{ my: 4 }}><Typography variant="caption" color="text.secondary">KREDENSIAL AKSES</Typography></Divider>
 
-                                <Paper elevation={0} sx={{ p: 2, bgcolor: alpha(theme.palette.primary.main, .05), borderRadius: 2, border: `1px solid ${alpha(theme.palette.primary.main, .1)}` }}>
+                                <Paper variant="outlined" sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: 2 }}>
                                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                         <Box>
-                                            <Typography variant="caption" color="text.secondary" display="block">Email: <strong style={{ color: theme.palette.primary.main }}>admin@example.com</strong></Typography>
-                                            <Typography variant="caption" color="text.secondary" display="block">Password: <strong style={{ color: theme.palette.primary.main }}>admin123</strong></Typography>
+                                            <Typography variant="caption" display="block">ID: <strong>admin@del.ac.id</strong></Typography>
+                                            <Typography variant="caption" display="block">PASS: <strong>admin123</strong></Typography>
                                         </Box>
-                                        <Chip label="Demo Mode" size="small" sx={{ bgcolor: theme.palette.primary.main, color: "white", fontWeight: 600 }} />
+                                        <Security sx={{ color: "#cbd5e1" }} />
                                     </Box>
                                 </Paper>
 
-                                <Box sx={{ textAlign: "center", mt: 3, display: "flex", flexDirection: "column", gap: 1 }}>
-                                    {/* Link ke Register */}
-                                    <Typography variant="body2" color="text.secondary">
-                                        Belum punya akun?{" "}
-                                        <Link to="/register" style={{ color: theme.palette.primary.main, fontWeight: 700, textDecoration: "none" }}>
-                                            Daftar Sekarang
-                                        </Link>
-                                    </Typography>
-                                    <Link to="/" style={{ textDecoration: "none" }}>
-                                        <Typography variant="body2" sx={{ color: "text.secondary", "&:hover": { color: theme.palette.primary.main } }}>← Kembali ke Beranda</Typography>
+                                <Box sx={{ textAlign: "center", mt: 4 }}>
+                                    <Link href="/" style={{ textDecoration: "none" }}>
+                                        <Typography variant="body2" sx={{ color: "text.secondary", "&:hover": { color: "#10b981" } }}>
+                                            ← Kembali ke Portal Utama
+                                        </Typography>
                                     </Link>
                                 </Box>
                             </form>

@@ -23,26 +23,49 @@ export default function LoginPage() {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+
         try {
+            // 1. Kirim request ke Laptop 1 (Gateway)
             const res = await API.post('/auth/login', { email, password });
-            Cookies.set('token', res.data.token, { expires: 1 });
-            Cookies.set('role', res.data.role || 'student', { expires: 1 });
-            Cookies.set('name', res.data.name || 'Student', { expires: 1 });
-            localStorage.setItem('token', res.data.token);
-            localStorage.setItem('role', res.data.role || 'student');
-            localStorage.setItem('name', res.data.name || 'Student');
+
+            // Asumsi respon backend: { data: { token: '...', user: { name: '...', role: '...' } } }
+            // Sesuaikan dengan format JSON asli dari temanmu di Laptop 1
+            const { token, user } = res.data.data;
+
+            // 2. Simpan ke Cookies (untuk kebutuhan Server Side / Middleware)
+            Cookies.set('token', token, { expires: 1 });
+            Cookies.set('role', user.role, { expires: 1 });
+            Cookies.set('name', user.name, { expires: 1 });
+
+            // 3. Simpan ke LocalStorage (untuk kebutuhan Client Side)
+            localStorage.setItem('token', token);
+            localStorage.setItem('role', user.role);
+            localStorage.setItem('name', user.name);
             localStorage.setItem('email', email);
-            router.push('/dashboard');
-        } catch {
-            // Demo fallback
-            if (email === 'student@edu.ai' && password === 'student123') {
-                ['token', 'role', 'name', 'email'].forEach((k, i) => {
-                    const v = ['dummy_token', 'student', 'Student Demo', 'student@edu.ai'][i];
-                    Cookies.set(k, v); localStorage.setItem(k, v);
-                });
-                router.push('/dashboard'); return;
+
+            alert("Login Berhasil!");
+
+            // 4. Redirect berdasarkan Role
+            if (user.role === 'admin') {
+                // Jika admin nyasar ke sini, arahkan ke portal admin (opsional)
+                setError('Silakan gunakan portal Admin untuk masuk.');
+            } else {
+                router.push('/courses'); // Siswa diarahkan ke Katalog Kursus
             }
-            setError('Email atau kata sandi tidak sesuai.');
+
+        } catch (err: any) {
+            console.error("Login Error:", err);
+
+            // Tampilkan pesan error dari backend jika ada
+            const serverMessage = err.response?.data?.message;
+            setError(serverMessage || 'Gagal terhubung ke server. Pastikan Laptop 1 aktif.');
+
+            // --- Demo fallback (HAPUS BAGIAN INI JIKA SUDAH FIX KONEK KE LAPTOP 1) ---
+            if (email === 'student@edu.ai' && password === 'student123') {
+                Cookies.set('token', 'dummy');
+                router.push('/courses');
+                return;
+            }
         } finally {
             setIsLoading(false);
         }
