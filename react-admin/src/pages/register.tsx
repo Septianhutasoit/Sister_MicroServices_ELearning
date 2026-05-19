@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authAPI } from "../services/api";
+import  API  from "../services/api";
 import {
     Box, Button, TextField, Typography, InputAdornment, IconButton,
     CircularProgress, alpha, useTheme, CssBaseline, Alert, Fade, Paper, Chip,
@@ -32,7 +32,7 @@ export default function Register() {
         setIsLoading(true);
         setError("");
         try {
-            await authAPI.post("/auth/admin/register", { name, email, password });
+            await API.post("/auth/admin/register", { name, email, password });
             setSuccess(true);
             setTimeout(() => navigate("/login"), 1800);
         } catch (err: any) {

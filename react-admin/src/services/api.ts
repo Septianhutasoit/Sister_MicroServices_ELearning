@@ -1,19 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Gunakan 'export' agar bisa dibaca oleh file lain
-export const authAPI = axios.create({
-    // Sesuaikan dengan IP Laptop 1 (Backend)
-    baseURL: 'http://10.248.14.79:3001',
-    headers: {
-        'Content-Type': 'application/json'
-    }
+const API = axios.create({
+
+    baseURL: "http://192.168.92.79",
+
 });
 
-// Menambahkan token ke header secara otomatis
-authAPI.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+export default API;

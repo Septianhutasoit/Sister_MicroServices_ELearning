@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authAPI } from "../services/api";
+import API from "../services/api";
 import {
     Box, Button, TextField, Typography, InputAdornment, IconButton,
     CircularProgress, CssBaseline, Alert, Fade, Paper
@@ -18,31 +18,45 @@ export default function Login() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    // --- LOGIKA LOGIN ---
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
 
         try {
-            const res = await authAPI.post("/login", { email, password });
-            const { token, user } = res.data.data;
+            // Tembak API ke Laptop 1 (Gateway)
+            const res = await API.post("/auth/login", {
+                email,
+                password
+            });
 
-            if (user.role !== 'admin') {
+            // Ambil token 
+            const data = res.data.data || res.data;
+            const { token, user } = data;
+
+            if (user && user.role !== "admin") {
                 setError("Akses Ditolak! Anda bukan Admin.");
                 setIsLoading(false);
                 return;
             }
 
             localStorage.setItem("token", token);
-            localStorage.setItem("admin_name", user.name);
+            if (user?.name) localStorage.setItem("admin_name", user.name);
             navigate("/dashboard");
 
         } catch (err: any) {
-            setError(err.response?.data?.message || "Gagal terhubung ke Laptop 1.");
+            console.error(err);
+
+            // Bypass Dummy untuk testing
             if (email === "admin@example.com" && password === "admin123") {
-                localStorage.setItem("token", "dummy");
+                localStorage.setItem("token", "dummy_admin_token");
+                localStorage.setItem("admin_name", "Admin Demo");
                 navigate("/dashboard");
+                return;
             }
+
+            setError(err.response?.data?.message || "Gagal terhubung ke Laptop 1 (Backend).");
         } finally {
             setIsLoading(false);
         }
@@ -57,7 +71,7 @@ export default function Login() {
         <Box sx={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, display: "flex", overflow: "hidden", bgcolor: "#F8FAFC" }}>
             <CssBaseline />
 
-            {/* PANEL KIRI */}
+            {/* PANEL KIRI (BRANDING) */}
             <Box sx={{
                 width: { xs: "0%", lg: "50%" },
                 display: { xs: "none", lg: "flex" },
@@ -81,7 +95,7 @@ export default function Login() {
                                 bgcolor: "rgba(255,255,255,0.05)",
                                 border: "1px solid rgba(255,255,255,0.1)",
                                 borderRadius: 3,
-                                minWidth: 140 // 👈 SUDAH DIPINDAH KE DALAM SX
+                                minWidth: 140
                             }}>
                                 <Typography variant="h5" sx={{ fontWeight: 800, color: "#10b981" }}>{s.value}</Typography>
                                 <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", fontWeight: 600 }}>{s.label}</Typography>
@@ -91,7 +105,7 @@ export default function Login() {
                 </Box>
             </Box>
 
-            {/* PANEL KANAN */}
+            {/* PANEL KANAN (FORM LOGIN) */}
             <Box sx={{ width: { xs: "100%", lg: "50%" }, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#FFFFFF" }}>
                 <Box sx={{ width: "100%", maxWidth: 420, px: 4 }}>
                     <Fade in={true} timeout={800}>
@@ -105,7 +119,7 @@ export default function Login() {
                                 </Typography>
                             </Box>
 
-                            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                            {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
 
                             <form onSubmit={handleLogin}>
                                 <TextField
@@ -113,13 +127,26 @@ export default function Login() {
                                     type="email" value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required margin="normal"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Email sx={{ color: '#94a3b8' }} />
+                                            </InputAdornment>
+                                        )
+                                    }}
                                 />
+
                                 <TextField
                                     fullWidth label="Kata Sandi"
                                     type={showPassword ? "text" : "password"}
                                     value={password} onChange={(e) => setPassword(e.target.value)}
                                     required margin="normal"
                                     InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Lock sx={{ color: '#94a3b8' }} />
+                                            </InputAdornment>
+                                        ),
                                         endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
@@ -133,10 +160,18 @@ export default function Login() {
                                 <Button
                                     type="submit" fullWidth variant="contained"
                                     disabled={isLoading}
-                                    sx={{ mt: 4, py: 1.8, bgcolor: "#0f172a" }}
+                                    sx={{
+                                        mt: 4, py: 1.8, bgcolor: "#0f172a", borderRadius: 2,
+                                        fontWeight: 'bold', fontSize: 16, textTransform: 'none',
+                                        '&:hover': { bgcolor: '#1e293b' }
+                                    }}
                                 >
-                                    {isLoading ? <CircularProgress size={24} color="inherit" /> : "Masuk ke Dashboard Admin"}
+                                    {isLoading ? <CircularProgress size={24} color="inherit" /> : "Masuk ke Dashboard"}
                                 </Button>
+
+                                <Typography variant="caption" color="text.secondary" align="center" sx={{ display: "block", mt: 3 }}>
+                                    Gunakan <strong>admin@example.com</strong> / <strong>admin123</strong> untuk demo (dummy)
+                                </Typography>
                             </form>
                         </Box>
                     </Fade>

@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 const API = axios.create({
     // ❌ SALAH: "http://10.248.14.79.3001"
     // ✅ BENAR: Menggunakan titik dua (:) sebelum port 3001
-    baseURL: "http://10.248.14.79:3001",
+    baseURL: "http://172.27.80.154",
 });
 
 API.interceptors.request.use((config) => {
