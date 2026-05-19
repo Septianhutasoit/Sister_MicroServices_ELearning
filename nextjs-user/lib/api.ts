@@ -2,8 +2,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const API = axios.create({
-    // Gunakan IP Laptop 1
-    baseURL: "http://10.248.14.79",
+    // ❌ SALAH: "http://10.248.14.79.3001"
+    // ✅ BENAR: Menggunakan titik dua (:) sebelum port 3001
+    baseURL: "http://10.248.14.79:3001",
 });
 
 API.interceptors.request.use((config) => {
