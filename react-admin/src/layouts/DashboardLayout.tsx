@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Box, Drawer, useMediaQuery, useTheme } from '@mui/material'
 import Sidebar from '../components/layout/Sidebar'
 import Navbar from '../components/layout/Navbar'
@@ -11,7 +11,6 @@ export default function DashboardLayout() {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
     const navigate = useNavigate()
-    const location = useLocation()
 
     const handleLogout = () => {
         localStorage.removeItem('token')
@@ -70,7 +69,6 @@ export default function DashboardLayout() {
                 <Navbar
                     onMenuClick={() => setMobileOpen(true)}
                     onLogout={handleLogout}
-                    pathname={location.pathname}
                 />
 
                 {/* Page Content */}

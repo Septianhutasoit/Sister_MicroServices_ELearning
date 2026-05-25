@@ -1,18 +1,7 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 
-const API = axios.create({
-    // ❌ SALAH: "http://10.248.14.79.3001"
-    // ✅ BENAR: Menggunakan titik dua (:) sebelum port 3001
-    baseURL: "http://172.27.80.154",
+const AUTH_API = axios.create({
+    baseURL: "http://172.30.59.79:3001",
 });
 
-API.interceptors.request.use((config) => {
-    const token = Cookies.get("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-export default API;
+export default AUTH_API;

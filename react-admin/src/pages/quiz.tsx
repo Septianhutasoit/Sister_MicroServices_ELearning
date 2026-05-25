@@ -61,7 +61,7 @@ export default function Quiz() {
 
             {/* --- STATISTIK KELULUSAN (KPI) --- */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Avatar sx={{ bgcolor: '#EFF6FF', color: '#3B82F6', width: 56, height: 56, borderRadius: 3 }}><Timeline fontSize="large" /></Avatar>
                         <Box>
@@ -70,7 +70,7 @@ export default function Quiz() {
                         </Box>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Avatar sx={{ bgcolor: '#DCFCE7', color: '#16A34A', width: 56, height: 56, borderRadius: 3 }}><CheckCircle fontSize="large" /></Avatar>
                         <Box>
@@ -79,7 +79,7 @@ export default function Quiz() {
                         </Box>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 3, background: 'linear-gradient(135deg, #008A5E 0%, #004D40 100%)', color: 'white' }}>
                         <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: '#FCD34D', width: 56, height: 56, borderRadius: 3 }}><EmojiEvents fontSize="large" /></Avatar>
                         <Box>

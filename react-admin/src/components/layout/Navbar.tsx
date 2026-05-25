@@ -150,13 +150,15 @@ export default function Navbar({ onMenuClick, onLogout }: { onMenuClick?: () => 
                 anchorEl={anchorEl}
                 open={profileOpen}
                 onClose={() => setAnchorEl(null)}
-                PaperProps={{
-                    sx: {
-                        mt: 2, width: 240,
-                        borderRadius: '16px',
-                        border: '1px solid #f1f5f9',
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                        overflow: 'hidden',
+                slotProps={{
+                    paper: {
+                        sx: {
+                            mt: 2, width: 240,
+                            borderRadius: '16px',
+                            border: '1px solid #f1f5f9',
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                            overflow: 'hidden',
+                        }
                     }
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}

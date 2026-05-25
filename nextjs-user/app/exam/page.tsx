@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Clock, FileQuestion, CheckCircle2, AlertCircle, Loader2, Award } from 'lucide-react';
+import { Brain, Clock, FileQuestion, CheckCircle2, AlertCircle, Loader2, Award, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import API from '@/lib/api';
 

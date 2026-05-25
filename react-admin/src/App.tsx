@@ -11,7 +11,7 @@ import Notifications from "./pages/notifiications";
 import Settings from "./pages/settings";
 import Register from "./pages/register";
 
-import { Box, Typography, Button, Container, Grid, useTheme, CssBaseline, keyframes } from "@mui/material";
+import { Box, Typography, Button, Container, Grid, CssBaseline, keyframes } from "@mui/material";
 import { School, ArrowForward, AutoAwesome, Speed, Security, Storage, Language, Code } from "@mui/icons-material";
 
 // --- ANIMASI CSS ---
@@ -29,7 +29,6 @@ const pulseGlow = keyframes`
 
 
 const LandingPage = () => {
-  const theme = useTheme();
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#F8FAFC', overflow: 'hidden', position: 'relative' }}>
@@ -69,10 +68,10 @@ const LandingPage = () => {
 
       {/* --- HERO SECTION --- */}
       <Container maxWidth="xl" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', pt: { xs: 12, md: 8 }, zIndex: 1 }}>
-        <Grid container spacing={4} alignItems="center">
+        <Grid container spacing={4} sx={{ alignItems: 'center' }}>
 
           {/* SISI KIRI: TEKS & TOMBOL CTA */}
-          <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'center', md: 'left' }, zIndex: 2 }}>
+          <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: { xs: 'center', md: 'left' }, zIndex: 2 }}>
 
             {/* Badge Kecil */}
             <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.8, bgcolor: 'white', border: '1px solid #E2E8F0', borderRadius: 10, mb: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
@@ -88,7 +87,7 @@ const LandingPage = () => {
             </Typography>
 
             <Typography variant="h3" sx={{ fontWeight: 800, color: '#1E293B', mb: 3, fontSize: { xs: '1.5rem', md: '2rem' } }}>
-              Platform Belajar <br sx={{ display: { xs: 'none', md: 'block' } }} />
+              Platform Belajar <Box component="br" sx={{ display: { xs: 'none', md: 'block' } }} />
               <span style={{ background: 'linear-gradient(to right, #008A5E, #3B82F6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Microservices
               </span>
@@ -119,13 +118,13 @@ const LandingPage = () => {
 
             {/* Tech Stack Indicator */}
             <Box sx={{ display: 'flex', gap: 4, justifyContent: { xs: 'center', md: 'flex-start' }, mt: 6, opacity: 0.7 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Speed sx={{ color: '#0F172A' }} /> <Typography variant="caption" fontWeight={700}>Kinerja Tinggi</Typography></Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Security sx={{ color: '#008A5E' }} /> <Typography variant="caption" fontWeight={700}>Aman & Terenkripsi</Typography></Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Speed sx={{ color: '#0F172A' }} /> <Typography variant="caption" sx={{ fontWeight: 700 }}>Kinerja Tinggi</Typography></Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Security sx={{ color: '#008A5E' }} /> <Typography variant="caption" sx={{ fontWeight: 700 }}>Aman & Terenkripsi</Typography></Box>
             </Box>
           </Grid>
 
           {/* SISI KANAN: ILUSTRASI MICROSERVICES (ANIMATED) */}
-          <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'block' }, position: 'relative', height: 600 }}>
+          <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' }, position: 'relative', height: 600 }}>
 
             {/* Lingkaran Dekoratif */}
             <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 450, height: 450, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,138,94,0.08) 0%, rgba(248,250,252,0) 70%)', zIndex: 0 }} />
@@ -143,10 +142,10 @@ const LandingPage = () => {
                 <Box sx={{ width: 40, height: 14, bgcolor: '#008A5E', borderRadius: 4 }} />
               </Box>
               <Grid container spacing={1.5}>
-                <Grid item xs={4}><Box sx={{ height: 65, bgcolor: '#F1F5F9', borderRadius: 2 }} /></Grid>
-                <Grid item xs={4}><Box sx={{ height: 65, bgcolor: '#F1F5F9', borderRadius: 2 }} /></Grid>
-                <Grid item xs={4}><Box sx={{ height: 65, bgcolor: '#F1F5F9', borderRadius: 2 }} /></Grid>
-                <Grid item xs={12}><Box sx={{ height: 50, bgcolor: '#F1F5F9', borderRadius: 2, mt: 1 }} /></Grid>
+                <Grid size={4}><Box sx={{ height: 65, bgcolor: '#F1F5F9', borderRadius: 2 }} /></Grid>
+                <Grid size={4}><Box sx={{ height: 65, bgcolor: '#F1F5F9', borderRadius: 2 }} /></Grid>
+                <Grid size={4}><Box sx={{ height: 65, bgcolor: '#F1F5F9', borderRadius: 2 }} /></Grid>
+                <Grid size={12}><Box sx={{ height: 50, bgcolor: '#F1F5F9', borderRadius: 2, mt: 1 }} /></Grid>
               </Grid>
             </Box>
 

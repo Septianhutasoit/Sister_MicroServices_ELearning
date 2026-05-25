@@ -25,7 +25,7 @@ export default function Settings() {
 
             <Grid container spacing={4}>
                 {/* KIRI: PENGATURAN PROFIL */}
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0' }}>
                         <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 3 }}>Profil Administrator</Typography>
                         <TextField fullWidth label="Nama Lengkap" defaultValue="Admin Utama" sx={{ mb: 3 }} />
@@ -35,7 +35,7 @@ export default function Settings() {
                 </Grid>
 
                 {/* KANAN: KONFIGURASI MICROSERVICES */}
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 4, borderRadius: 4, border: '1px solid #e2e8f0' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                             <CloudSync sx={{ color: '#008A5E' }} />

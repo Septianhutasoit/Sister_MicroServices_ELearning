@@ -45,12 +45,14 @@ export default function Users() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <Search sx={{ color: '#94a3b8' }} />
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Search sx={{ color: '#94a3b8' }} />
+                                    </InputAdornment>
+                                )
+                            }
                         }}
                     />
                     {/* Tombol Tambah Siswa Manual (Opsional) */}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Shield, Calendar, LogOut, Loader2, Key, Settings } from 'lucide-react';
+import { User, Mail, Shield, Calendar, LogOut, Loader2, Key, Settings, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import API from '@/lib/api';

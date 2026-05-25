@@ -127,12 +127,14 @@ export default function Login() {
                                     type="email" value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required margin="normal"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Email sx={{ color: '#94a3b8' }} />
-                                            </InputAdornment>
-                                        )
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Email sx={{ color: '#94a3b8' }} />
+                                                </InputAdornment>
+                                            )
+                                        }
                                     }}
                                 />
 
@@ -141,19 +143,21 @@ export default function Login() {
                                     type={showPassword ? "text" : "password"}
                                     value={password} onChange={(e) => setPassword(e.target.value)}
                                     required margin="normal"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Lock sx={{ color: '#94a3b8' }} />
-                                            </InputAdornment>
-                                        ),
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        )
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <Lock sx={{ color: '#94a3b8' }} />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }
                                     }}
                                 />
 

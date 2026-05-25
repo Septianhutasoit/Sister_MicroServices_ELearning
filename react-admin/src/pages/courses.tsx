@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
     Box, Button, Typography, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Dialog, DialogTitle,
-    DialogContent, DialogActions, TextField, IconButton, Divider,
+    DialogContent, DialogActions, TextField, IconButton,
     Radio, RadioGroup, FormControlLabel, FormControl, Chip
 } from "@mui/material";
 import { Add, Delete, Edit, MenuBook, Quiz } from "@mui/icons-material";
@@ -149,7 +149,7 @@ export default function Courses() {
             {/* ========================================================= */}
             {/* MODAL / DIALOG FORM TAMBAH KURSUS & UJIAN                 */}
             {/* ========================================================= */}
-            <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 4 } }}>
+            <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth slotProps={{ paper: { sx: { borderRadius: 4 } } }}>
                 <DialogTitle sx={{ fontWeight: 800, color: '#1e293b', borderBottom: '1px solid #e2e8f0', pb: 2 }}>
                     Buat Kursus Baru
                 </DialogTitle>

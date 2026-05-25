@@ -123,7 +123,7 @@ export default function Register() {
                                 <Fade in>
                                     <Paper elevation={0} sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, .06), border: `1px solid ${alpha(theme.palette.primary.main, .2)}`, textAlign: "center" }}>
                                         <CheckCircle sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 1 }} />
-                                        <Typography fontWeight={700} color="primary">Registrasi Berhasil!</Typography>
+                                        <Typography sx={{ fontWeight: 700 }} color="primary">Registrasi Berhasil!</Typography>
                                         <Typography variant="body2" color="text.secondary">Mengalihkan ke halaman login…</Typography>
                                     </Paper>
                                 </Fade>
@@ -139,19 +139,21 @@ export default function Register() {
                             <form onSubmit={handleRegister}>
                                 {/* Nama */}
                                 <TextField fullWidth label="Nama Lengkap" value={name} onChange={(e) => setName(e.target.value)} required margin="normal"
-                                    InputProps={{ startAdornment: <InputAdornment position="start"><Person sx={{ color: "text.secondary" }} /></InputAdornment> }}
+                                    slotProps={{ input: { startAdornment: <InputAdornment position="start"><Person sx={{ color: "text.secondary" }} /></InputAdornment> } }}
                                     sx={{ mb: 1, "& .MuiOutlinedInput-root": { "&:hover fieldset": { borderColor: theme.palette.primary.main }, "&.Mui-focused fieldset": { borderColor: theme.palette.primary.main, borderWidth: 2 } } }}
                                 />
                                 {/* Email */}
                                 <TextField fullWidth label="Alamat Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required margin="normal"
-                                    InputProps={{ startAdornment: <InputAdornment position="start"><Email sx={{ color: "text.secondary" }} /></InputAdornment> }}
+                                    slotProps={{ input: { startAdornment: <InputAdornment position="start"><Email sx={{ color: "text.secondary" }} /></InputAdornment> } }}
                                     sx={{ mb: 1, "& .MuiOutlinedInput-root": { "&:hover fieldset": { borderColor: theme.palette.primary.main }, "&.Mui-focused fieldset": { borderColor: theme.palette.primary.main, borderWidth: 2 } } }}
                                 />
                                 {/* Password */}
                                 <TextField fullWidth label="Kata Sandi" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required margin="normal"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Lock sx={{ color: "text.secondary" }} /></InputAdornment>,
-                                        endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>,
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: <InputAdornment position="start"><Lock sx={{ color: "text.secondary" }} /></InputAdornment>,
+                                            endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>,
+                                        }
                                     }}
                                     sx={{ mb: 1, "& .MuiOutlinedInput-root": { "&:hover fieldset": { borderColor: theme.palette.primary.main }, "&.Mui-focused fieldset": { borderColor: theme.palette.primary.main, borderWidth: 2 } } }}
                                 />
@@ -160,9 +162,11 @@ export default function Register() {
                                     error={confirm.length > 0 && !passwordMatch}
                                     helperText={confirm.length > 0 && !passwordMatch ? "Password tidak cocok" : ""}
                                     color={passwordMatch ? "success" : "primary"}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Lock sx={{ color: confirm.length > 0 ? (passwordMatch ? "success.main" : "error.main") : "text.secondary" }} /></InputAdornment>,
-                                        endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end">{showConfirm ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>,
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: <InputAdornment position="start"><Lock sx={{ color: confirm.length > 0 ? (passwordMatch ? "success.main" : "error.main") : "text.secondary" }} /></InputAdornment>,
+                                            endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end">{showConfirm ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment>,
+                                        }
                                     }}
                                     sx={{ mb: 3, "& .MuiOutlinedInput-root": { "&:hover fieldset": { borderColor: theme.palette.primary.main }, "&.Mui-focused fieldset": { borderWidth: 2 } } }}
                                 />
