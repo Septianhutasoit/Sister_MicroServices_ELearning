@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import '../controllers/auth_controller.dart'; // Pastikan file controller ini sudah kamu buat ya
+import '../controllers/auth_controller.dart'; 
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,7 +11,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
-  bool _isLoading = false; // Untuk menampilkan animasi muter
+  bool _isLoading = false; 
 
   // 1. TAMBAHKAN CONTROLLER UNTUK MEMBACA KETIKAN USER
   final TextEditingController _nameController = TextEditingController();
@@ -79,7 +79,7 @@ class _RegisterPageState extends State<RegisterPage> {
               // --- FORM EMAIL ---
               _buildInputContainer(
                 child: TextField(
-                  controller: _emailController, // <-- Pasang controller disini
+                  controller: _emailController, 
                   keyboardType: TextInputType.emailAddress,
                   decoration: _inputDecoration(
                     "Email address",
@@ -93,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
               _buildInputContainer(
                 child: TextField(
                   controller:
-                      _passwordController, // <-- Pasang controller disini
+                      _passwordController, 
                   obscureText: !_isPasswordVisible,
                   decoration: _inputDecoration("Password", Icons.lock_outline)
                       .copyWith(
@@ -117,11 +117,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // --- TOMBOL DAFTAR (BAGIAN B YANG SUDAH DIPERBAIKI) ---
               ElevatedButton(
-                // Jika sedang loading, tombol mati. Jika tidak, jalankan logic.
+                // Jika sedang loading, tombol mati.
                 onPressed: _isLoading
                     ? null
                     : () async {
-                        // Ambil teks yang diketik user
                         String name = _nameController.text.trim();
                         String email = _emailController.text.trim();
                         String password = _passwordController.text.trim();
@@ -133,7 +132,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               content: Text("Harap isi semua kolom!"),
                             ),
                           );
-                          return; // Berhenti disini, jangan lanjut ke API
+                          return; 
                         }
 
                         // Mulai animasi loading

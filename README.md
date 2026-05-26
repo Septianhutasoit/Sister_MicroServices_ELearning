@@ -147,17 +147,17 @@ Sebelum memulai, pastikan Anda telah menginstal:
 
 <div align="center">
 
-| **Layer** | **Technology** | **Version** | **Purpose** |
+| **Layer** | **Technology** | **Version** | **Purpose** | 
 | :---: | :--- | :---: | :--- |
 | 🎨 **Frontend** | ReactJS | 18.3 | UI library |
-| | Vite | 5.0 | Build tool |
+| | Vite | 5.0 | Build tool | 
 | | Tailwind CSS | 3.4 | Styling |
 | | Redux Toolkit | 2.0 | State management |
 | | React Router | 6.23 | Routing |
 | ⚙️ **Backend** | Node.js + Express | 20.0 / 4.19 | REST API |
 | | MongoDB + Mongoose | 7.0 / 8.5 | Database |
 | | JWT | 9.0 | Authentication |
-| 🔧 **DevOps** | Docker | 27.0 | Containerization |
+| 🔧 **DevOps/Cloud** | Docker | 27.0 | Containerization |
 | | Nginx | 1.26 | Reverse proxy |
 
 </div>
