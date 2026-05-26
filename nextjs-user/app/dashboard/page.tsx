@@ -7,6 +7,7 @@ import {
     Target, Flame, Trophy, Calendar, Zap, Star, Medal, BookMarked, Timer
 } from 'lucide-react';
 import Link from 'next/link';
+import API from '@/lib/api';
 
 /* ─── Framer variants ─────────────────────────────────────────── */
 const fadeUp = (delay = 0) => ({
@@ -94,10 +95,121 @@ function LevelBadge({ level }: { level: string }) {
 }
 
 /* ─── Main page ──────────────────────────────────────────────── */
+// --- UTILITY UNTUK AMBIL ID SECARA AMAN ---
+const getSafeId = (val: any): string => {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (typeof val === 'number') return String(val);
+    if (typeof val === 'object') {
+        if (val.$oid) return val.$oid;
+        if (val.id) return getSafeId(val.id);
+        if (val._id) return getSafeId(val._id);
+        if (val.toString && typeof val.toString === 'function') {
+            const str = val.toString();
+            if (str !== '[object Object]') return str;
+        }
+    }
+    return '';
+};
+
 export default function DashboardPage() {
     const [mounted, setMounted] = useState(false);
+    const [userName, setUserName] = useState('Siswa');
+    const [leaderboard, setLeaderboard] = useState(LEADERBOARD);
+    const [activeCourses, setActiveCourses] = useState<any[]>([]);
 
-    useEffect(() => { setMounted(true); }, []);
+    useEffect(() => {
+        setMounted(true);
+        const storedName = localStorage.getItem('name') || 'Siswa';
+        setUserName(storedName);
+        
+        const fetchDashboardData = async () => {
+            let userPts = 0;
+            
+            // 1. Ambil data nilai ujian untuk kalkulasi poin (Score * 10)
+            try {
+                const examRes = await API.get('/exams/history');
+                const history = examRes.data.data || [];
+                userPts = history.reduce((acc: number, curr: any) => acc + (curr.score || 0), 0) * 10;
+            } catch (e) {
+                console.warn("Gagal mengambil data poin/nilai dari backend, menggunakan 0 pts.");
+                userPts = 0;
+            }
+
+            // 2. Buat leaderboard dinamis terurut berdasarkan pts tertinggi
+            const initialLeaderboard = [
+                { rank: 1, name: 'Aulia Rahma', pts: 4820, avatar: 'A' },
+                { rank: 2, name: 'Dimas Prasetyo', pts: 4650, avatar: 'D' },
+                { rank: 3, name: 'Reza Firmansyah', pts: 3980, avatar: 'R' },
+                { rank: 4, name: 'Nadia Kusuma', pts: 3750, avatar: 'N' },
+                { rank: 5, name: `${storedName} (Kamu)`, pts: userPts, avatar: storedName.charAt(0).toUpperCase(), isMe: true }
+            ];
+
+            const sorted = initialLeaderboard
+                .sort((a, b) => b.pts - a.pts)
+                .map((item, index) => ({
+                    ...item,
+                    rank: index + 1
+                }));
+            setLeaderboard(sorted);
+
+            // 3. Fetch data pembelajaran aktif
+            try {
+                const res = await API.get('/enrollments/me');
+                const fetched = res.data.data || [];
+                const mapped = fetched.map((c: any) => {
+                    const courseDetails = c.course || {};
+                    const id = getSafeId(c.courseId) || getSafeId(courseDetails.id) || getSafeId(courseDetails._id) || getSafeId(c.id) || getSafeId(c._id) || Math.random().toString();
+                    const totalLessons = c.totalChapters || courseDetails.totalChapters || (courseDetails.materials ? courseDetails.materials.length : 10);
+
+                    // Ambil progress dari backend (gunakan completionPercent jika tersedia, fallback ke progress)
+                    let progress = c.completionPercent ?? (typeof c.progress === 'number' ? c.progress : 0);
+                    let doneLessons = typeof c.completedChapters === 'number' ? c.completedChapters : 0;
+
+                    // Gabungkan dengan localStorage jika lebih tinggi (sinkronisasi optimistik)
+                    try {
+                        const localRaw = localStorage.getItem(`course_progress_${id}`);
+                        if (localRaw) {
+                            const localP = JSON.parse(localRaw);
+                            if (localP.completedChapters > doneLessons) {
+                                doneLessons = localP.completedChapters;
+                                progress = localP.progress;
+                            }
+                        }
+                    } catch (_) {}
+
+                    return {
+                        id,
+                        title: c.title || courseDetails.title || 'Materi Belajar',
+                        category: c.category || courseDetails.category || 'Materi',
+                        progress,
+                        nextLesson: progress >= 100 ? 'Selesai ✓' : `Bab ${doneLessons + 1}`,
+                        totalLessons,
+                        doneLessons,
+                        duration: progress >= 100 ? 'Telah selesai' : 'Belum selesai',
+                        level: 'Semua',
+                        color: progress >= 100 ? '#10b981' : '#3b82f6',
+                        colorBg: progress >= 100 ? '#f0fdf4' : '#eff6ff',
+                        instructor: c.instructor || courseDetails.instructor || 'Pengajar'
+                    };
+                });
+                setActiveCourses(mapped);
+            } catch (error) {
+                console.warn("Gagal mengambil data pembelajaran aktif dari backend:", error);
+                setActiveCourses([]);
+            }
+        };
+        
+        fetchDashboardData();
+    }, []);
+
+    const dynamicStats = [
+        { label: 'Kursus Aktif', value: activeCourses.length.toString(), sub: activeCourses.length > 0 ? '+1 minggu ini' : 'Mulai belajar', icon: PlayCircle, accent: '#3b82f6', bg: '#eff6ff', ring: '#bfdbfe' },
+        { label: 'Jam Belajar', value: activeCourses.length > 0 ? '1j' : '0j', sub: activeCourses.length > 0 ? 'Baru mulai' : 'Ayo mulai!', icon: Clock, accent: '#f97316', bg: '#fff7ed', ring: '#fed7aa' },
+        { label: 'Sertifikat', value: activeCourses.filter(c => c.progress === 100).length.toString(), sub: 'Selesaikan kursus', icon: Award, accent: '#10b981', bg: '#f0fdf4', ring: '#a7f3d0' },
+        { label: 'Streak', value: activeCourses.length > 0 ? '1' : '0', sub: 'hari berturut-turut 🔥', icon: Flame, accent: '#ef4444', bg: '#fef2f2', ring: '#fecaca' },
+    ];
+
     if (!mounted) return null;
 
     return (
@@ -131,7 +243,7 @@ export default function DashboardPage() {
                             </div>
 
                             <h1 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight tracking-tight">
-                                Selamat kembali, <span className="text-emerald-400">Budi!</span> 👋
+                                Selamat kembali, <span className="text-emerald-400">{userName}!</span> 👋
                             </h1>
                             <p className="text-slate-200 text-base font-medium mb-8 leading-relaxed max-w-xl">
                                 Kamu sudah belajar <strong className="text-white">7 hari berturut-turut</strong>. Lanjutkan momentum ini!
@@ -165,7 +277,7 @@ export default function DashboardPage() {
                 ══════════════════════════════════════════════ */}
                 <motion.div variants={stagger} initial="initial" animate="animate"
                     className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                    {STATS.map((s, i) => (
+                    {dynamicStats.map((s, i) => (
                         <motion.div
                             key={i}
                             variants={{ initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } }}
@@ -200,7 +312,7 @@ export default function DashboardPage() {
                                     Pembelajaran Aktif
                                 </h2>
                                 <p className="text-xs text-slate-500 font-medium mt-1">
-                                    Lanjutkan {ACTIVE_COURSES.length} kursus yang sedang berjalan
+                                    Lanjutkan {activeCourses.length} kursus yang sedang berjalan
                                 </p>
                             </div>
                             <Link href="/my-learning">
@@ -210,84 +322,101 @@ export default function DashboardPage() {
                             </Link>
                         </div>
 
-                        {ACTIVE_COURSES.map((course, i) => (
-                            <motion.div
-                                key={course.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.15 + i * 0.1, duration: 0.5 }}
-                                whileHover={{ y: -4, boxShadow: `0 20px 40px ${course.color}15` }}
-                                className="bg-white border border-slate-200 rounded-3xl p-6 cursor-pointer transition-all shadow-sm"
-                            >
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                                    {/* Progress ring */}
-                                    <div className="relative shrink-0 mx-auto sm:mx-0">
-                                        <ProgressRing pct={course.progress} color={course.color} size={70} />
-                                        <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-slate-800">
-                                            {course.progress}%
-                                        </span>
-                                    </div>
-
-                                    <div className="flex-1 min-w-0 w-full">
-                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-3">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-md text-emerald-800 tracking-wide uppercase border border-emerald-200"
-                                                        style={{ background: course.colorBg }}>
-                                                        {course.category}
-                                                    </span>
-                                                    <LevelBadge level={course.level} />
-                                                </div>
-                                                <h3 className="text-lg font-bold text-slate-800 leading-tight mb-1">
-                                                    {course.title}
-                                                </h3>
-                                                <p className="text-xs text-slate-500 font-medium">
-                                                    Instruktur:{' '}
-                                                    <span className="font-bold text-slate-700">{course.instructor}</span>
-                                                </p>
-                                            </div>
-                                            <Link href={`/my-learning/${course.id}`}>
-                                                <motion.button
-                                                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                                                    className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 text-xs font-bold text-white px-5 py-2.5 rounded-xl transition-opacity hover:opacity-90 shadow-md"
-                                                    style={{ background: course.color }}
-                                                >
-                                                    <PlayCircle size={16} /> Lanjutkan
-                                                </motion.button>
-                                            </Link>
-                                        </div>
-
-                                        {/* Progress bar info */}
-                                        <div className="mt-4 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                                                    <BookMarked size={12} style={{ color: course.color }} />
-                                                    Selanjutnya:{' '}
-                                                    <em className="not-italic text-slate-800 font-bold truncate max-w-[150px] sm:max-w-xs">
-                                                        {course.nextLesson}
-                                                    </em>
-                                                </span>
-                                                <span className="text-[10px] text-slate-600 font-bold px-2 py-1 rounded-md bg-white border border-slate-200">
-                                                    {course.doneLessons} / {course.totalLessons}
-                                                </span>
-                                            </div>
-                                            <div className="h-1.5 rounded-full overflow-hidden mb-2 bg-slate-200">
-                                                <motion.div
-                                                    className="h-full rounded-full"
-                                                    style={{ background: course.color }}
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${course.progress}%` }}
-                                                    transition={{ duration: 1.2, delay: 0.4 + i * 0.1, ease: 'easeOut' }}
-                                                />
-                                            </div>
-                                            <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
-                                                <Timer size={12} /> Estimasi sisa: {course.duration}
+                        {activeCourses.length === 0 ? (
+                            <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
+                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <BookOpen size={28} className="text-slate-400" />
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-800 mb-2">Belum ada pembelajaran aktif</h3>
+                                <p className="text-slate-500 text-sm mb-6 max-w-sm mx-auto">
+                                    Anda belum terdaftar di kursus apa pun. Silakan kunjungi katalog untuk memulai pembelajaran pertama Anda!
+                                </p>
+                                <Link href="/courses">
+                                    <button className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-colors shadow-md shadow-emerald-600/10">
+                                        Pilih Kursus di Katalog
+                                    </button>
+                                </Link>
+                            </div>
+                        ) : (
+                            activeCourses.map((course, i) => (
+                                <motion.div
+                                    key={course.id}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.15 + i * 0.1, duration: 0.5 }}
+                                    whileHover={{ y: -4, boxShadow: `0 20px 40px ${course.color}15` }}
+                                    className="bg-white border border-slate-200 rounded-3xl p-6 cursor-pointer transition-all shadow-sm"
+                                >
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+                                        {/* Progress ring */}
+                                        <div className="relative shrink-0 mx-auto sm:mx-0">
+                                            <ProgressRing pct={course.progress} color={course.color} size={70} />
+                                            <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-slate-800">
+                                                {course.progress}%
                                             </span>
                                         </div>
+
+                                        <div className="flex-1 min-w-0 w-full">
+                                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-3">
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-md text-emerald-800 tracking-wide uppercase border border-emerald-200"
+                                                            style={{ background: course.colorBg }}>
+                                                            {course.category}
+                                                        </span>
+                                                        <LevelBadge level={course.level} />
+                                                    </div>
+                                                    <h3 className="text-lg font-bold text-slate-800 leading-tight mb-1">
+                                                        {course.title}
+                                                    </h3>
+                                                    <p className="text-xs text-slate-500 font-medium">
+                                                        Instruktur:{' '}
+                                                        <span className="font-bold text-slate-700">{course.instructor}</span>
+                                                    </p>
+                                                </div>
+                                                <Link href={`/my-learning/${course.id}`}>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                                                        className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 text-xs font-bold text-white px-5 py-2.5 rounded-xl transition-opacity hover:opacity-90 shadow-md"
+                                                        style={{ background: course.color }}
+                                                    >
+                                                        <PlayCircle size={16} /> Lanjutkan
+                                                    </motion.button>
+                                                </Link>
+                                            </div>
+
+                                            {/* Progress bar info */}
+                                            <div className="mt-4 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                                                        <BookMarked size={12} style={{ color: course.color }} />
+                                                        Selanjutnya:{' '}
+                                                        <em className="not-italic text-slate-800 font-bold truncate max-w-[150px] sm:max-w-xs">
+                                                            {course.nextLesson}
+                                                        </em>
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-600 font-bold px-2 py-1 rounded-md bg-white border border-slate-200">
+                                                        {course.doneLessons} / {course.totalLessons}
+                                                    </span>
+                                                </div>
+                                                <div className="h-1.5 rounded-full overflow-hidden mb-2 bg-slate-200">
+                                                    <motion.div
+                                                        className="h-full rounded-full"
+                                                        style={{ background: course.color }}
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${course.progress}%` }}
+                                                        transition={{ duration: 1.2, delay: 0.4 + i * 0.1, ease: 'easeOut' }}
+                                                    />
+                                                </div>
+                                                <span className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
+                                                    <Timer size={12} /> Estimasi sisa: {course.duration}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                </motion.div>
+                            ))
+                        )}
                     </motion.div>
 
                     {/* RIGHT SIDEBAR (Ujian & Leaderboard) */}
@@ -347,7 +476,7 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                             <div className="p-3">
-                                {LEADERBOARD.map((u, i) => (
+                                {leaderboard.map((u, i) => (
                                     <div key={i}
                                         className={`px-4 py-3 flex items-center gap-4 rounded-2xl mb-1 transition-all ${u.isMe ? 'bg-emerald-50 border border-emerald-100' : 'hover:bg-slate-50 border border-transparent'}`}>
                                         <span className={`w-6 text-center text-sm font-black shrink-0 ${u.rank <= 3 ? 'text-amber-500' : 'text-slate-400'}`}>

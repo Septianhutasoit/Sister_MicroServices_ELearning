@@ -1,162 +1,63 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Clock, FileQuestion, CheckCircle2, AlertCircle, Loader2, Award, ArrowRight } from 'lucide-react';
+import { ExternalLink, BookOpen, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import API from '@/lib/api';
-
-// --- TIPE DATA UJIAN DARI MICROSERVICES ---
-interface Exam {
-    id: string | number;
-    title: string;
-    courseName: string;
-    durationMinutes: number;
-    questionCount: number; // Sesuai admin panel (maks 5)
-    status: 'pending' | 'completed';
-    score?: number;
-    urgent?: boolean;
-}
 
 export default function ExamPage() {
-    const [exams, setExams] = useState<Exam[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    // --- 1. MENGAMBIL DATA DARI EXAM SERVICE ---
-    useEffect(() => {
-        const fetchExams = async () => {
-            try {
-                // Tembak Endpoint Exam di Laptop 2 (via Gateway Laptop 1)
-                const res = await API.get('/exams/me');
-                setExams(res.data.data || []);
-            } catch (error) {
-                console.error("Gagal fetch ujian, menggunakan Dummy Data:", error);
-
-                // --- FALLBACK DUMMY DATA (Jika Backend Belum Menyala) ---
-                setExams([
-                    {
-                        id: "e1", title: 'Ujian Akhir Microservices', courseName: 'Backend Node.js Advanced',
-                        durationMinutes: 15, questionCount: 5, status: 'pending', urgent: true
-                    },
-                    {
-                        id: "e2", title: 'Evaluasi UI/UX Design', courseName: 'UI/UX Design Masterclass',
-                        durationMinutes: 10, questionCount: 5, status: 'pending', urgent: false
-                    },
-                    {
-                        id: "e3", title: 'Kuis Dasar Docker', courseName: 'Mastering Docker',
-                        durationMinutes: 10, questionCount: 5, status: 'completed', score: 80
-                    },
-                ]);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchExams();
-    }, []);
-
     return (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 min-h-screen">
-
-            {/* --- HEADER --- */}
-            <div className="mb-10">
-                <h1 className="text-3xl md:text-4xl font-black text-slate-800 tracking-tight mb-2">Ujian & Evaluasi</h1>
-                <p className="text-slate-500 font-medium text-base">Kerjakan ujian untuk mengukur pemahaman dan mendapatkan sertifikat kelulusan.</p>
-            </div>
-
-            {/* --- LOADING STATE --- */}
-            {isLoading ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {[1, 2].map((n) => (
-                        <div key={n} className="bg-white rounded-3xl border border-slate-100 p-6 h-48 animate-pulse flex flex-col gap-4 shadow-sm">
-                            <div className="flex justify-between">
-                                <div className="w-12 h-12 bg-slate-200 rounded-xl"></div>
-                                <div className="w-20 h-6 bg-slate-200 rounded-full"></div>
-                            </div>
-                            <div className="w-3/4 h-6 bg-slate-200 rounded-lg mt-2"></div>
-                            <div className="w-1/2 h-4 bg-slate-200 rounded-lg"></div>
-                        </div>
-                    ))}
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 min-h-screen flex flex-col items-center justify-center text-center"
+        >
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-10 w-full">
+                {/* Icon */}
+                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-100">
+                    <ExternalLink size={36} className="text-blue-500" />
                 </div>
-            ) : exams.length === 0 ? (
-                /* --- EMPTY STATE --- */
-                <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-slate-100 border-dashed">
-                    <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
-                        <CheckCircle2 size={32} className="text-emerald-500" />
+
+                {/* Title */}
+                <h1 className="text-3xl font-black text-slate-800 mb-3">Ujian Dikelola di Portal Terpisah</h1>
+                <p className="text-slate-500 font-medium text-base mb-8 max-w-md mx-auto leading-relaxed">
+                    Fitur ujian untuk platform ini dikelola oleh tim khusus di portal terpisah. Silakan akses portal ujian untuk mengerjakan dan melihat hasil ujian Anda.
+                </p>
+
+                {/* Info Box */}
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 mb-8 text-left space-y-3">
+                    <p className="text-sm font-bold text-blue-800 uppercase tracking-wide">Yang perlu Anda ketahui:</p>
+                    <div className="flex items-start gap-3">
+                        <CheckCircle2 size={18} className="text-blue-500 mt-0.5 shrink-0" />
+                        <p className="text-sm text-blue-700 font-medium">Gunakan email dan password yang sama dengan akun ini untuk login ke portal ujian.</p>
                     </div>
-                    <h2 className="text-xl font-bold text-slate-800 mb-2">Hore! Tidak ada ujian tertunda.</h2>
-                    <p className="text-slate-500 max-w-md mx-auto">Anda telah menyelesaikan semua ujian untuk materi yang sedang dipelajari.</p>
+                    <div className="flex items-start gap-3">
+                        <CheckCircle2 size={18} className="text-blue-500 mt-0.5 shrink-0" />
+                        <p className="text-sm text-blue-700 font-medium">Setelah ujian selesai, hasil nilai Anda akan otomatis tersinkronisasi ke halaman <strong>Pencapaian</strong> di portal ini.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <CheckCircle2 size={18} className="text-blue-500 mt-0.5 shrink-0" />
+                        <p className="text-sm text-blue-700 font-medium">Kursus yang sudah selesai 100% di portal ini akan ditampilkan sebagai pencapaian secara independen.</p>
+                    </div>
                 </div>
-            ) : (
-                /* --- GRID KARTU UJIAN --- */
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {exams.map((exam, index) => {
-                        const isCompleted = exam.status === 'completed';
 
-                        return (
-                            <motion.div
-                                key={exam.id}
-                                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.1 }}
-                                className={`bg-white border p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden transition-all hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 ${isCompleted ? 'border-slate-200' : 'border-slate-100'
-                                    }`}
-                            >
-                                {/* Garis Warna Kiri (Indikator Status) */}
-                                <div className={`absolute top-0 left-0 w-1.5 h-full ${isCompleted ? 'bg-emerald-500' : (exam.urgent ? 'bg-amber-500' : 'bg-blue-500')
-                                    }`}></div>
-
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`p-3 rounded-xl ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
-                                        }`}>
-                                        {isCompleted ? <Award size={24} /> : <Brain size={24} />}
-                                    </div>
-
-                                    {/* Badge Status */}
-                                    {isCompleted ? (
-                                        <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-200 flex items-center gap-1">
-                                            <CheckCircle2 size={12} /> Selesai
-                                        </span>
-                                    ) : exam.urgent ? (
-                                        <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-200 animate-pulse">
-                                            Segera Dikerjakan
-                                        </span>
-                                    ) : (
-                                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold border border-blue-100">
-                                            Tersedia
-                                        </span>
-                                    )}
-                                </div>
-
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{exam.courseName}</p>
-                                <h3 className="text-xl font-black text-slate-800 mb-4 leading-tight">{exam.title}</h3>
-
-                                {/* Info Durasi & Soal */}
-                                <div className="flex items-center gap-4 text-sm font-semibold text-slate-500 mb-6 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <span className="flex items-center gap-1.5"><Clock size={16} className={isCompleted ? 'text-slate-400' : 'text-amber-500'} /> {exam.durationMinutes} Menit</span>
-                                    <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                                    <span className="flex items-center gap-1.5"><FileQuestion size={16} className={isCompleted ? 'text-slate-400' : 'text-blue-500'} /> {exam.questionCount} Soal PG</span>
-                                </div>
-
-                                {/* Area Bawah (Tombol / Nilai) */}
-                                <div className="mt-auto">
-                                    {isCompleted ? (
-                                        <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                            <span className="text-sm font-bold text-emerald-800">Nilai Akhir Anda:</span>
-                                            <span className="text-2xl font-black text-emerald-600">{exam.score}<span className="text-sm font-bold text-emerald-600/50">/100</span></span>
-                                        </div>
-                                    ) : (
-                                        // TODO: Nanti arahkan ke halaman soal (/exam/[id])
-                                        <Link href={`/exam/${exam.id}`}>
-                                            <button className="w-full py-3.5 bg-slate-900 hover:bg-emerald-600 text-white rounded-2xl font-bold shadow-md transition-colors flex items-center justify-center gap-2">
-                                                Mulai Ujian <ArrowRight size={18} />
-                                            </button>
-                                        </Link>
-                                    )}
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a
+                        href="http://localhost:3001"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl transition-colors shadow-md"
+                    >
+                        <ExternalLink size={18} /> Buka Portal Ujian
+                    </a>
+                    <Link href="/achievements">
+                        <button className="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-6 py-3 rounded-xl transition-colors w-full">
+                            <BookOpen size={18} /> Lihat Pencapaian Saya
+                        </button>
+                    </Link>
                 </div>
-            )}
+            </div>
         </motion.div>
     );
 }

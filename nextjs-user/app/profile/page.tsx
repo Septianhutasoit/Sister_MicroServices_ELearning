@@ -27,7 +27,7 @@ export default function ProfilePage() {
                 const res = await API.get('/auth/me');
                 setUser(res.data.data);
             } catch (error) {
-                console.error("Gagal fetch profile, menggunakan Dummy Data", error);
+                console.warn("Gagal fetch profile, menggunakan Dummy Data", error);
                 // Fallback Dummy Data jika backend belum nyala
                 setUser({
                     id: "STU-2025-0891",

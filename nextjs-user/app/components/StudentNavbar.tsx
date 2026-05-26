@@ -62,14 +62,12 @@ export default function StudentNavbar() {
         { name: 'Beranda', href: '/dashboard', icon: Home },
         { name: 'Katalog Kursus', href: '/courses', icon: BookOpen },
         { name: 'Pembelajaran Saya', href: '/my-learning', icon: PlayCircle },
-        { name: 'Ujian', href: '/exam', icon: Brain },
         { name: 'Pencapaian', href: '/achievements', icon: Trophy },
     ];
 
     const quickItems = [
         { href: '/my-learning', icon: PlayCircle, label: 'Kursus Aktif', desc: 'Lanjutkan pembelajaran' },
-        { href: '/exam', icon: Calendar, label: 'Ujian Mendatang', desc: 'Lihat jadwal ujian' },
-        { href: '/achievements', icon: Trophy, label: 'Pencapaian', desc: 'Sertifikat & lencana' },
+        { href: '/achievements', icon: Trophy, label: 'Pencapaian', desc: 'Kursus selesai & sertifikat' },
     ];
 
     if (!isAuthorized) return null;

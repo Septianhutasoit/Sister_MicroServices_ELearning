@@ -6,9 +6,41 @@ import { BookOpen, CheckCircle2, Loader2, AlertCircle, FileText } from 'lucide-r
 import Link from 'next/link';
 import API from '@/lib/api'; // Pastikan path ini benar mengarah ke konfigurasi axios kamu
 
+// --- UTILITY UNTUK AMBIL ID & GAMBAR SECARA AMAN ---
+const getSafeId = (val: any): string => {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (typeof val === 'number') return String(val);
+    if (typeof val === 'object') {
+        if (val.$oid) return val.$oid;
+        if (val.id) return getSafeId(val.id);
+        if (val._id) return getSafeId(val._id);
+        if (val.toString && typeof val.toString === 'function') {
+            const str = val.toString();
+            if (str !== '[object Object]') return str;
+        }
+    }
+    return '';
+};
+
+const getSafeImageUrl = (img: string, title: string = '') => {
+    if (!img) {
+        if (title.toLowerCase().includes('blockchain')) return 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&auto=format&fit=crop';
+        if (title.toLowerCase().includes('node')) return 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=500&auto=format&fit=crop';
+        return 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop';
+    }
+    if (img.startsWith('http')) return img;
+    // Custom mapping untuk dummy filenames dari DB
+    const lower = img.toLowerCase() + ' ' + title.toLowerCase();
+    if (lower.includes('blockchain')) return 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&auto=format&fit=crop';
+    if (lower.includes('node') || lower.includes('microservices')) return 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=500&auto=format&fit=crop';
+    if (lower.includes('react') || lower.includes('next') || lower.includes('frontend')) return 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&auto=format&fit=crop';
+    return 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop';
+};
+
 // --- TIPE DATA KURSUS (Disesuaikan untuk Materi Teks) ---
 interface EnrolledCourse {
-    id: string | number;
+    id: string;
     title: string;
     category: string;
     progress: number;
@@ -26,13 +58,48 @@ export default function MyLearningPage() {
         const fetchMyLearning = async () => {
             try {
                 // Tembak Endpoint Enrollment di Laptop 1
-                // Asumsi endpointnya: GET /enrollments/me atau /courses/enrolled
                 const res = await API.get('/enrollments/me');
 
-                // Asumsi format backend: { data: [...] }
-                setCourses(res.data.data || []);
+                // Mapping data secara aman untuk mendukung model database MongoDB & PostgreSQL
+                const rawData = res.data.data || [];
+                const mappedCourses = rawData.map((c: any) => {
+                    const courseDetails = c.course || {};
+                    const id = getSafeId(c.courseId) || getSafeId(courseDetails.id) || getSafeId(courseDetails._id) || getSafeId(c.id) || getSafeId(c._id) || Math.random().toString();
+                    const title = c.title || courseDetails.title || 'Materi Belajar';
+                    const category = c.category || courseDetails.category || 'Materi';
+                    const imageSource = courseDetails.image || courseDetails.imageUrl || c.imageUrl || '';
+                    const totalChapters = c.totalChapters || courseDetails.totalChapters || (courseDetails.materials ? courseDetails.materials.length : 10);
+
+                    // Baca progress dari backend
+                    let progress = c.completionPercent ?? (typeof c.progress === 'number' ? c.progress : 0);
+                    let completedChapters = typeof c.completedChapters === 'number' ? c.completedChapters : 0;
+
+                    // Gabungkan dengan localStorage progress jika lebih tinggi (sinkronisasi optimistik)
+                    const localRaw = localStorage.getItem(`course_progress_${id}`);
+                    if (localRaw) {
+                        try {
+                            const localP = JSON.parse(localRaw);
+                            if (localP.completedChapters > completedChapters) {
+                                completedChapters = localP.completedChapters;
+                                progress = localP.progress;
+                            }
+                        } catch (_) {}
+                    }
+                    
+                    return {
+                        id,
+                        title,
+                        category,
+                        progress,
+                        totalChapters,
+                        completedChapters,
+                        imageUrl: getSafeImageUrl(imageSource, title)
+                    };
+                });
+
+                setCourses(mappedCourses);
             } catch (error) {
-                console.error("Gagal mengambil data dari Backend. Menggunakan Data Dummy.");
+                console.warn("Gagal mengambil data dari Backend. Menggunakan Data Dummy.");
 
                 // FALLBACK DUMMY DATA (Muncul jika Backend Node.js belum nyala / error)
                 setCourses([

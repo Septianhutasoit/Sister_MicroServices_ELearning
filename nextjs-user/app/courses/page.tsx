@@ -43,7 +43,7 @@ export default function CoursesPage() {
                 }));
                 setCourses(fetchedData);
             } catch (error) {
-                console.error("Gagal fetch courses, menggunakan Dummy Data:", error);
+                console.warn("Gagal fetch courses, menggunakan Dummy Data:", error);
                 // --- FALLBACK DUMMY (Jika Backend Belum Menyala) ---
                 setCourses([
                     { id: "1", title: 'Mastering Docker & Microservices', description: 'Pelajari arsitektur terdistribusi.', instructor: 'Budi Santoso', category: 'DevOps', rating: 4.9, students: 1240, totalChapters: 12, imageUrl: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=500&auto=format&fit=crop' },
@@ -127,8 +127,8 @@ export default function CoursesPage() {
             ) : (
                 /* --- KONTEN GRID KURSUS --- */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredCourses.map((course) => (
-                        <div key={course.id} className="bg-white rounded-[2rem] border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)] hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+                    {filteredCourses.map((course, index) => (
+                        <div key={course.id || index} className="bg-white rounded-[2rem] border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)] hover:-translate-y-1 transition-all duration-300 group flex flex-col">
 
                             {/* Gambar Cover */}
                             <div className="h-48 overflow-hidden relative bg-slate-100 p-2 pb-0">
