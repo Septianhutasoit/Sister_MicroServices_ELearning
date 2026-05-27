@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres-slave:
+    image: postgres:15
+    container_name: student-postgres-slave
+    restart: always
+    # Hapus baris 'user: postgres' di sini agar container start sebagai root
+    environment:
+      PGPASSWORD: replpassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_slave_data:/var/lib/postgresql/data
+    entrypoint:
+      - bash
+      - -c
+      - |
+        # Jika direktori data kosong, lakukan backup streaming awal dari Master
+        if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
+          echo "Memulai backup data dari Master (Laptop 1)..."
+          pg_basebackup -h 10.80.72.189 -p 5432 -U replicator -D /var/lib/postgresql/data -Fp -Xs -P -R
+        fi
+
+        # Perbaiki perizinan & kepemilikan folder data sebagai root
+        echo "Memperbaiki perizinan folder data..."
+        chmod 700 /var/lib/postgresql/data
+        chown -R postgres:postgres /var/lib/postgresql/data
+
+        # Jalankan PostgreSQL dengan aman sebagai user postgres menggunakan gosu
+        echo "Memulai PostgreSQL Standby Mode sebagai user postgres..."
+        exec gosu postgres postgres -c hot_standby=on
+
+volumes:
+  postgres_slave_data:

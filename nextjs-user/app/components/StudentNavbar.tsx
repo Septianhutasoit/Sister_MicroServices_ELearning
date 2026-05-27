@@ -52,7 +52,8 @@ export default function StudentNavbar() {
     /* ── Logout ────────────────────────────────────────────── */
     const handleLogout = () => {
         if (!confirm('Yakin ingin keluar?')) return;
-        localStorage.clear();
+        // Hanya hapus kredensial, jangan gunakan localStorage.clear() agar data progress tidak hilang
+        ['token', 'role', 'user_role', 'name', 'email'].forEach(k => localStorage.removeItem(k));
         ['token', 'role', 'name', 'email'].forEach(k => Cookies.remove(k, { path: '/' }));
         router.push('/login');
     };
