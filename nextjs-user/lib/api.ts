@@ -1,10 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-export const API_BASE_URL = "http://10.80.72.189:8080";
+export const API_BASE_URL = "/api/gateway";
 
 const API = axios.create({
-    baseURL: "http://10.80.72.189:8080", // Ganti 172.30.59.189 dengan IP Laptop 1 Anda yang sebenarnya
+    baseURL: "http://10.206.80.189:8080", // Gunakan IP Laptop 1 & port Gateway 8080
 });
 
 

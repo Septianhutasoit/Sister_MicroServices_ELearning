@@ -6,11 +6,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
+import API from '@/lib/api';
 import {
     Bell, ChevronDown, LogOut, Settings, User,
     Home, BookOpen, ClipboardList, Menu, X,
     Trophy, Calendar, PlayCircle, Brain,
 } from 'lucide-react';
+
+interface Notification {
+    id: number;
+    user_id: string;
+    message: string;
+    status: string;
+    created_at: string;
+}
 
 export default function StudentNavbar() {
     const router = useRouter();
@@ -25,6 +34,10 @@ export default function StudentNavbar() {
     const [userName, setUserName] = useState('Student');
     const [userEmail, setUserEmail] = useState('');
     const [userInitial, setUserInitial] = useState('S');
+
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     /* ── Proteksi role student ─────────────────────────────── */
     useEffect(() => {
@@ -41,6 +54,75 @@ export default function StudentNavbar() {
             setUserInitial(name.charAt(0).toUpperCase());
         }
     }, [router, pathname]);
+
+    /* ── Ambil notifikasi dari service Laptop 1 ─────────────── */
+    useEffect(() => {
+        if (!isAuthorized) return;
+        const fetchNotifications = async () => {
+            try {
+                const email = localStorage.getItem('email') || '';
+                const emailLower = email.toLowerCase().trim();
+                
+                console.log("[Notifications] Memulai fetch untuk email:", emailLower);
+                const res = await API.get('/notifications');
+                let list = [];
+                if (Array.isArray(res.data)) {
+                    list = res.data;
+                } else if (res.data && Array.isArray(res.data.value)) {
+                    list = res.data.value;
+                } else if (res.data && Array.isArray(res.data.data)) {
+                    list = res.data.data;
+                }
+
+                // Filter agar hanya menampilkan notifikasi milik user ini atau broadcast ke semua
+                const readRaw = localStorage.getItem(`student_read_notif_ids_${emailLower}`);
+                const readIds = readRaw ? JSON.parse(readRaw) : [];
+
+                const filteredList = list.map((n: any) => ({
+                    ...n,
+                    status: readIds.includes(n.id) ? 'read' : n.status
+                })).filter((n: any) => {
+                    const target = String(n.user_id || '').toLowerCase().trim();
+                    return target === 'all' || target === 'semua' || target === emailLower;
+                });
+
+                console.log("[Notifications] List terfilter:", filteredList);
+                setNotifications(filteredList);
+                setUnreadCount(filteredList.filter((n: any) => n.status === 'unread').length);
+            } catch (err: any) {
+                console.warn("[Notifications] Gagal mengambil:", err.message || err);
+            }
+        };
+        fetchNotifications();
+        const interval = setInterval(fetchNotifications, 15000); // Poll every 15s
+        return () => clearInterval(interval);
+    }, [isAuthorized]);
+
+    const handleMarkAllRead = () => {
+        const email = localStorage.getItem('email') || '';
+        const emailLower = email.toLowerCase().trim();
+        const readRaw = localStorage.getItem(`student_read_notif_ids_${emailLower}`);
+        const readIds = readRaw ? JSON.parse(readRaw) : [];
+        const newReadIds = Array.from(new Set([...readIds, ...notifications.map((n: any) => n.id)]));
+        localStorage.setItem(`student_read_notif_ids_${emailLower}`, JSON.stringify(newReadIds));
+
+        setNotifications(prev => prev.map(n => ({ ...n, status: 'read' })));
+        setUnreadCount(0);
+    };
+
+
+    /* ── Click outside listener untuk dropdown notifikasi ───── */
+    useEffect(() => {
+        if (!isNotificationOpen) return;
+        const handleOutsideClick = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.notification-container')) {
+                setIsNotificationOpen(false);
+            }
+        };
+        document.addEventListener('click', handleOutsideClick);
+        return () => document.removeEventListener('click', handleOutsideClick);
+    }, [isNotificationOpen]);
 
     /* ── Scroll listener — pill muncul setelah 80px ────────── */
     useEffect(() => {
@@ -238,20 +320,88 @@ export default function StudentNavbar() {
                             </div>
 
                             {/* Bell notifikasi */}
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                aria-label="Notifikasi"
-                                className={`
-                                    relative p-2 rounded-xl transition-all
-                                    ${isScrolled
-                                        ? 'text-slate-400 hover:bg-white/10 hover:text-white'
-                                        : 'text-white/70 hover:bg-white/10 hover:text-white'}
-                                `}
-                            >
-                                <Bell size={18} />
-                                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-                            </motion.button>
+                            <div className="relative notification-container">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                        setIsNotificationOpen(v => !v);
+                                        setIsProfileOpen(false);
+                                        setIsQuickOpen(false);
+                                    }}
+                                    aria-label="Notifikasi"
+                                    className={`
+                                        relative p-2 rounded-xl transition-all
+                                        ${isScrolled
+                                            ? 'text-slate-400 hover:bg-white/10 hover:text-white'
+                                            : 'text-white/70 hover:bg-white/10 hover:text-white'}
+                                        ${isNotificationOpen ? 'bg-white/10 text-white' : ''}
+                                    `}
+                                >
+                                    <Bell size={18} />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-[#0c0f1a]" />
+                                    )}
+                                </motion.button>
+
+                                {/* Dropdown Notifikasi */}
+                                <AnimatePresence>
+                                    {isNotificationOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                                            transition={{ type: 'spring', damping: 22, stiffness: 300 }}
+                                            className="absolute right-0 mt-2 w-80 bg-[#0d1018]/97 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden z-50"
+                                        >
+                                            <div className="px-5 py-3 border-b border-white/8 flex justify-between items-center">
+                                                <p className="text-xs font-bold text-white/80 uppercase tracking-wider">
+                                                    Notifikasi
+                                                </p>
+                                                {unreadCount > 0 && (
+                                                    <button 
+                                                        onClick={handleMarkAllRead}
+                                                        className="text-[10px] text-emerald-400 hover:underline font-semibold"
+                                                    >
+                                                        Tandai semua dibaca
+                                                    </button>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="max-h-64 overflow-y-auto divide-y divide-white/5">
+                                                {notifications.length === 0 ? (
+                                                    <div className="py-8 text-center">
+                                                        <Bell className="mx-auto text-white/20 mb-2" size={24} />
+                                                        <p className="text-xs text-white/40">Tidak ada notifikasi baru</p>
+                                                    </div>
+                                                ) : (
+                                                    notifications.map((notif) => (
+                                                        <div 
+                                                            key={notif.id} 
+                                                            className={`p-4 transition-colors hover:bg-white/4 ${notif.status === 'unread' ? 'bg-emerald-500/5' : ''}`}
+                                                        >
+                                                            <div className="flex justify-between items-start gap-2">
+                                                                <p className={`text-xs text-white/90 leading-normal ${notif.status === 'unread' ? 'font-medium' : ''}`}>
+                                                                    {notif.message}
+                                                                </p>
+                                                                {notif.status === 'unread' && (
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1" />
+                                                                )}
+                                                            </div>
+                                                            <p className="text-[9px] text-white/40 mt-1">
+                                                                {new Date(notif.created_at).toLocaleDateString('id-ID', {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit'
+                                                                })}
+                                                            </p>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
 
                             {/* Profile button */}
                             <div className="relative">

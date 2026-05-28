@@ -1,33 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Box, Typography, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Chip, LinearProgress,
-    Grid, Avatar, MenuItem, Select, FormControl, InputLabel
+    Grid, Avatar, MenuItem, Select, FormControl, InputLabel, CircularProgress
 } from "@mui/material";
 import { CheckCircle, Cancel, Timeline, EmojiEvents } from "@mui/icons-material";
+import { AUTH_API } from "../services/api";
 
-// --- DATA DUMMY (Nanti didapat dari Exam Service -> PostgreSQL) ---
-// Asumsi: Max soal 5. Tiap soal benar = 20 poin. Total 100.
-const studentResults = [
-    { id: 1, name: "Budi Santoso", email: "budi@student.edu.ai", course: "Microservices Architecture", correctAnswers: 5, score: 100 },
-    { id: 2, name: "Siti Aminah", email: "siti.a@student.edu.ai", course: "Dasar Docker & Container", correctAnswers: 4, score: 80 },
-    { id: 3, name: "Alex Wijaya", email: "alexw@student.edu.ai", course: "UI/UX Design Fundamental", correctAnswers: 2, score: 40 },
-    { id: 4, name: "Nisa Fauziah", email: "nisafz@student.edu.ai", course: "Microservices Architecture", correctAnswers: 5, score: 100 },
-    { id: 5, name: "Reza Rahadian", email: "reza@student.edu.ai", course: "Dasar Docker & Container", correctAnswers: 3, score: 60 },
-];
+interface StudentResult {
+    id: number | string;
+    name: string;
+    email: string;
+    course: string;
+    correctAnswers: number;
+    score: number;
+    passed: boolean;
+}
 
 export default function Quiz() {
+    const [studentResults, setStudentResults] = useState<StudentResult[]>([]);
     const [filterCourse, setFilterCourse] = useState("Semua Kursus");
+    const [loading, setLoading] = useState(true);
 
-    // Filter data berdasarkan dropdown (Simulasi filter API)
+    useEffect(() => {
+        const fetchResults = async () => {
+            try {
+                const res = await AUTH_API.get("/exams/results");
+                setStudentResults(res.data?.data || res.data || []);
+            } catch (err) {
+                console.error("Gagal memuat hasil ujian:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchResults();
+    }, []);
+
+    // Filter data berdasarkan dropdown
     const filteredResults = filterCourse === "Semua Kursus"
         ? studentResults
         : studentResults.filter(s => s.course === filterCourse);
 
     // Kalkulasi Analitik Singkat
     const totalExams = filteredResults.length;
-    const passedExams = filteredResults.filter(s => s.score >= 60).length; // KKM = 60 (Min 3 benar)
+    const passedExams = filteredResults.filter(s => s.score >= 60).length; // KKM = 60
     const passPercentage = totalExams === 0 ? 0 : Math.round((passedExams / totalExams) * 100);
+
+    // Dapatkan daftar kursus unik dari hasil ujian
+    const uniqueCourses = ["Semua Kursus", ...Array.from(new Set(studentResults.map(s => s.course)))];
 
     return (
         <Box sx={{ pb: 4 }}>
@@ -51,10 +71,9 @@ export default function Quiz() {
                         onChange={(e) => setFilterCourse(e.target.value)}
                         sx={{ bgcolor: 'white', borderRadius: 2 }}
                     >
-                        <MenuItem value="Semua Kursus">Semua Kursus</MenuItem>
-                        <MenuItem value="Microservices Architecture">Microservices Architecture</MenuItem>
-                        <MenuItem value="Dasar Docker & Container">Dasar Docker & Container</MenuItem>
-                        <MenuItem value="UI/UX Design Fundamental">UI/UX Design Fundamental</MenuItem>
+                        {uniqueCourses.map((c) => (
+                            <MenuItem key={c} value={c}>{c}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
             </Box>
@@ -103,12 +122,19 @@ export default function Quiz() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredResults.length === 0 && (
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                                    <CircularProgress size={36} sx={{ color: '#008A5E', mb: 2 }} />
+                                    <Typography sx={{ color: '#64748b', fontWeight: 600 }}>Memuat data hasil ujian...</Typography>
+                                </TableCell>
+                            </TableRow>
+                        ) : filteredResults.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={5} align="center" sx={{ py: 5, color: '#94a3b8' }}>Tidak ada data ujian untuk kursus ini.</TableCell>
                             </TableRow>
-                        )}
-                        {filteredResults.map((student) => {
+                        ) : null}
+                        {!loading && filteredResults.map((student) => {
                             const isPassed = student.score >= 60; // Lulus jika 3 benar (60 poin)
 
                             return (

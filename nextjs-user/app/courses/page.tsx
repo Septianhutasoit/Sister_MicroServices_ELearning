@@ -32,7 +32,7 @@ export default function CoursesPage() {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const res = await API.get('/courses');
+                const res = await API.get('/courses/');
                 const fetchedData = res.data.data.map((c: any) => ({
                     ...c,
                     id: c._id || c.id,

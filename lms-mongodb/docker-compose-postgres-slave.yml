@@ -5,30 +5,28 @@ services:
     image: postgres:15
     container_name: student-postgres-slave
     restart: always
-    # Hapus baris 'user: postgres' di sini agar container start sebagai root
-    environment:
-      PGPASSWORD: replpassword
     ports:
       - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: exam_db
     volumes:
       - postgres_slave_data:/var/lib/postgresql/data
     entrypoint:
       - bash
       - -c
       - |
-        # Jika direktori data kosong, lakukan backup streaming awal dari Master
+        # Jika direktori data postgres kosong, lakukan backup awal dari Master Laptop 1
         if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
           echo "Memulai backup data dari Master (Laptop 1)..."
-          pg_basebackup -h 10.80.72.189 -p 5432 -U replicator -D /var/lib/postgresql/data -Fp -Xs -P -R
+          PGPASSWORD=replpassword pg_basebackup -h 10.206.80.189 -p 5432 -U replicator -D /var/lib/postgresql/data -Fp -Xs -P -R
+          
+          # PERBAIKAN: Ubah kepemilikan file kembali ke user postgres
+          chown -R postgres:postgres /var/lib/postgresql/data
+          chmod 700 /var/lib/postgresql/data
         fi
-
-        # Perbaiki perizinan & kepemilikan folder data sebagai root
-        echo "Memperbaiki perizinan folder data..."
-        chmod 700 /var/lib/postgresql/data
-        chown -R postgres:postgres /var/lib/postgresql/data
-
-        # Jalankan PostgreSQL dengan aman sebagai user postgres menggunakan gosu
-        echo "Memulai PostgreSQL Standby Mode sebagai user postgres..."
+        echo "Memulai PostgreSQL dalam Mode Standby..."
         exec gosu postgres postgres -c hot_standby=on
 
 volumes:

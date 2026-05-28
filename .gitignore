@@ -1,0 +1,31 @@
+# Dependency directories
+**/node_modules/
+node_modules/
+
+# Next.js build output
+.next/
+**/out/
+
+# Production builds
+**/dist/
+**/build/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environments & sensitive files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# Zip files
+*.zip
