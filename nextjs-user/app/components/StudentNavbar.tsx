@@ -55,14 +55,15 @@ export default function StudentNavbar() {
         }
     }, [router, pathname]);
 
-    /* ── Ambil notifikasi dari service Laptop 1 ─────────────── */
+    /* ── Ambil notifikasi dari service Laptop 1 (Real-time SSE) ───────── */
     useEffect(() => {
         if (!isAuthorized) return;
+
+        const email = localStorage.getItem('email') || '';
+        const emailLower = email.toLowerCase().trim();
+
         const fetchNotifications = async () => {
             try {
-                const email = localStorage.getItem('email') || '';
-                const emailLower = email.toLowerCase().trim();
-                
                 console.log("[Notifications] Memulai fetch untuk email:", emailLower);
                 const res = await API.get('/notifications');
                 let list = [];
@@ -93,9 +94,33 @@ export default function StudentNavbar() {
                 console.warn("[Notifications] Gagal mengambil:", err.message || err);
             }
         };
+
+        // Ambil data pertama kali saat mount (history)
         fetchNotifications();
-        const interval = setInterval(fetchNotifications, 15000); // Poll every 15s
-        return () => clearInterval(interval);
+
+        // Hubungkan ke stream SSE real-time dari Laptop 1
+        console.log("[Notifications] Menghubungkan ke SSE stream...");
+        const streamUrl = 'http://10.206.80.189:8080/notifications/stream';
+        const eventSource = new EventSource(streamUrl);
+
+        eventSource.onmessage = (event) => {
+            try {
+                console.log("[Notifications] Menerima event SSE baru:", event.data);
+                // Trigger re-fetch agar list terupdate secara instan dan sinkron
+                fetchNotifications();
+            } catch (err) {
+                console.warn("[Notifications] Gagal memproses data SSE:", err);
+            }
+        };
+
+        eventSource.onerror = (err) => {
+            console.warn("[Notifications] EventSource terputus atau error, mencoba menyambungkan kembali...", err);
+        };
+
+        return () => {
+            console.log("[Notifications] Menutup EventSource SSE...");
+            eventSource.close();
+        };
     }, [isAuthorized]);
 
     const handleMarkAllRead = () => {
