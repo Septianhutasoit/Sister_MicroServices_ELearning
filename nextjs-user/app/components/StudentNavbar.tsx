@@ -101,25 +101,52 @@ export default function StudentNavbar() {
         // Hubungkan ke stream SSE real-time dari Laptop 1
         console.log("[Notifications] Menghubungkan ke SSE stream...");
         const streamUrl = 'http://10.206.80.189:8080/notifications/stream';
-        const eventSource = new EventSource(streamUrl);
+        let eventSource: EventSource | null = null;
+        let fallbackInterval: NodeJS.Timeout | null = null;
+        let isUsingFallback = false;
 
-        eventSource.onmessage = (event) => {
-            try {
-                console.log("[Notifications] Menerima event SSE baru:", event.data);
-                // Trigger re-fetch agar list terupdate secara instan dan sinkron
-                fetchNotifications();
-            } catch (err) {
-                console.warn("[Notifications] Gagal memproses data SSE:", err);
-            }
+        const startFallbackPolling = () => {
+            if (isUsingFallback) return;
+            isUsingFallback = true;
+            console.info("[Notifications] SSE tidak tersedia atau gagal terhubung. Mengaktifkan fallback HTTP polling (15 detik)...");
+            // Set interval untuk polling berkala
+            fallbackInterval = setInterval(fetchNotifications, 15000);
         };
 
-        eventSource.onerror = (err) => {
-            console.warn("[Notifications] EventSource terputus atau error, mencoba menyambungkan kembali...", err);
-        };
+        try {
+            eventSource = new EventSource(streamUrl);
+
+            eventSource.onmessage = (event) => {
+                try {
+                    console.log("[Notifications] Menerima event SSE baru:", event.data);
+                    // Trigger re-fetch agar list terupdate secara instan dan sinkron
+                    fetchNotifications();
+                } catch (err) {
+                    console.warn("[Notifications] Gagal memproses data SSE:", err);
+                }
+            };
+
+            eventSource.onerror = (err) => {
+                console.warn("[Notifications] EventSource terputus atau error. Beralih ke fallback polling...", err);
+                if (eventSource) {
+                    eventSource.close();
+                }
+                startFallbackPolling();
+            };
+        } catch (e) {
+            console.error("[Notifications] Gagal menginisialisasi EventSource, menggunakan fallback polling...", e);
+            startFallbackPolling();
+        }
 
         return () => {
-            console.log("[Notifications] Menutup EventSource SSE...");
-            eventSource.close();
+            if (eventSource) {
+                console.log("[Notifications] Menutup EventSource SSE...");
+                eventSource.close();
+            }
+            if (fallbackInterval) {
+                console.log("[Notifications] Membersihkan fallback polling...");
+                clearInterval(fallbackInterval);
+            }
         };
     }, [isAuthorized]);
 
