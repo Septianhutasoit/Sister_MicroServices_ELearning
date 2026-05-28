@@ -196,8 +196,22 @@ export default function CourseReaderPage() {
             };
             localStorage.setItem(progressKey, JSON.stringify(savedProgress));
 
-            // 3. Coba sinkronisasi ke backend enrollment service
-            //    Coba beberapa format endpoint yang mungkin disediakan backend
+            // 3. Sinkronisasi progress ke auth-service /sync-progress (PostgreSQL / lms_notification_db)
+            try {
+                const email = localStorage.getItem('email') || 'student@edu.ai';
+                const finalCourseId = isNaN(Number(courseId)) ? courseId : Number(courseId);
+                await API.post('/sync-progress', {
+                    user_id: email,
+                    course_id: finalCourseId,
+                    completion_percent: newProgress,
+                    course_name: course.title
+                });
+                console.log(`✅ Progress berhasil disinkronkan ke PostgreSQL /sync-progress (${newProgress}%)`);
+            } catch (err: any) {
+                console.warn("⚠️ Gagal sinkronisasi progress ke /sync-progress:", err.message);
+            }
+
+            // 3.1 Coba sinkronisasi ke backend enrollment service (fallback)
             let backendSynced = false;
             const endpoints = [
                 { method: 'PUT', url: `/enroll/${courseId}`, body: { completedChapters: countCompleted, completionPercent: newProgress, progress: newProgress } },

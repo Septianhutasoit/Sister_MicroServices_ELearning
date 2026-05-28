@@ -362,6 +362,84 @@ app.get("/exams/results", async (req, res) => {
     }
 });
 
+// POST /sync-progress — Sinkronisasi progress kursus siswa ke exam_db & kirim notifikasi ke Laptop 1
+app.post("/sync-progress", async (req, res) => {
+    const { user_id, course_id, completion_percent, course_name } = req.body;
+
+    if (!user_id || course_id === undefined || completion_percent === undefined) {
+        return res.status(400).json({
+            status: "error",
+            message: "user_id, course_id, dan completion_percent wajib diisi."
+        });
+    }
+
+    try {
+        if (useDatabase && !isReadOnly) {
+            // Upsert ke tabel course_progress (insert atau update jika sudah ada)
+            await pool.query(`
+                INSERT INTO course_progress (user_id, course_id, completion_percent, updated_at)
+                VALUES ($1, $2, $3, NOW())
+                ON CONFLICT (user_id, course_id)
+                DO UPDATE SET completion_percent = $3, updated_at = NOW()
+            `, [user_id, course_id, completion_percent]);
+
+            console.log(`[SyncProgress] Progress ${user_id} di course_id=${course_id} → ${completion_percent}%`);
+        }
+
+        // Kirim notifikasi ke Laptop 1 jika progress 100%
+        if (completion_percent >= 100) {
+            const notifMessage = `Selamat! Anda telah menyelesaikan kursus "${course_name || `Kursus #${course_id}`}" dengan 100%. Terus belajar! 🎓`;
+            try {
+                const fetch = require('node-fetch');
+                const notifRes = await fetch('http://10.206.80.189:8080/notifications', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id,
+                        message: notifMessage,
+                    }),
+                });
+                if (notifRes.ok) {
+                    console.log(`[SyncProgress] Notifikasi berhasil dikirim ke ${user_id}`);
+                } else {
+                    console.warn(`[SyncProgress] Notifikasi gagal terkirim: HTTP ${notifRes.status}`);
+                }
+            } catch (notifErr) {
+                console.warn('[SyncProgress] Gagal mengirim notifikasi ke Laptop 1:', notifErr.message);
+                // Tidak gagalkan request meski notifikasi error
+            }
+        }
+
+        res.json({
+            status: "success",
+            message: `Progress ${user_id} di kursus "${course_name || course_id}" berhasil disinkronkan (${completion_percent}%).`
+        });
+    } catch (error) {
+        console.error("Sync Progress Error:", error);
+        res.status(500).json({ status: "error", message: "Gagal sinkronisasi progress." });
+    }
+});
+
+// GET /progress/:userId — Ambil progress kursus siswa
+app.get("/progress/:userId", async (req, res) => {
+    const { userId } = req.params;
+    try {
+        if (useDatabase) {
+            const result = await pool.query(`
+                SELECT cp.course_id, cp.completion_percent, cp.updated_at
+                FROM course_progress cp
+                WHERE cp.user_id = $1
+                ORDER BY cp.updated_at DESC
+            `, [userId]);
+            return res.json({ status: "success", data: result.rows });
+        }
+        res.json({ status: "success", data: [] });
+    } catch (error) {
+        console.error("Get Progress Error:", error);
+        res.status(500).json({ status: "error", message: "Gagal mengambil data progress." });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Auth service running on port ${PORT}`);
 });
