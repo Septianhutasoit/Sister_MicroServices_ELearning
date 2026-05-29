@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Mapping route prefix → backend service port & host
-// Sesuai arsitektur distributed, hubungkan notifications langsung ke Laptop 1 (10.206.80.189:8080)
+const BACKEND_HOST = process.env.NEXT_PUBLIC_BACKEND_IP || '10.206.80.189';
+const EXAMS_HOST = '10.206.80.79'; // Laptop 3
+
 const SERVICE_MAP: Record<string, { port: number; stripPrefix: boolean; host?: string }> = {
-    'auth':            { port: 3001, stripPrefix: true },                                          // /auth/login -> localhost:3001/login
-    'courses':         { port: 3002, stripPrefix: false },                                         // /courses    -> localhost:3002/courses
-    'enroll':          { port: 3002, stripPrefix: false },                                         // /enroll     -> localhost:3002/enroll
-    'enrollments':     { port: 3002, stripPrefix: false },                                         // /enrollments -> localhost:3002/enrollments
-    'notifications':   { port: 8080, stripPrefix: false, host: '10.206.80.189' },                  // /notifications -> 10.206.80.189:8080/notifications
-    'exams':           { port: 3004, stripPrefix: true },                                          // /exams      -> localhost:3004
-    'sync-progress':   { port: 3001, stripPrefix: false },                                         // /sync-progress -> localhost:3001/sync-progress
-    'progress':        { port: 3001, stripPrefix: false },                                         // /progress/:userId -> localhost:3001/progress/:userId
+    'auth':            { port: 3001, stripPrefix: true, host: BACKEND_HOST },                      // /auth/login -> 10.206.80.189:3001/login
+    'courses':         { port: 3002, stripPrefix: false, host: BACKEND_HOST },                     // /courses    -> 10.206.80.189:3002/courses
+    'enroll':          { port: 3002, stripPrefix: false, host: BACKEND_HOST },                     // /enroll     -> 10.206.80.189:3002/enroll
+    'enrollments':     { port: 3002, stripPrefix: false, host: BACKEND_HOST },                     // /enrollments -> 10.206.80.189:3002/enrollments
+    'notifications':   { port: 3001, stripPrefix: false, host: BACKEND_HOST },                     // /notifications -> 10.206.80.189:3001/notifications
+    'exams':           { port: 3004, stripPrefix: true, host: EXAMS_HOST },                        // /exams      -> 10.206.80.79:3004
+    'sync-progress':   { port: 3001, stripPrefix: false, host: BACKEND_HOST },                     // /sync-progress -> 10.206.80.189:3001/sync-progress
+    'progress':        { port: 3001, stripPrefix: false, host: BACKEND_HOST },                     // /progress/:userId -> 10.206.80.189:3001/progress/:userId
 };
 
 async function proxyRequest(request: NextRequest, params: { path: string[] }) {

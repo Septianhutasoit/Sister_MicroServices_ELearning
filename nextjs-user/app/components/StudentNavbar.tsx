@@ -100,7 +100,8 @@ export default function StudentNavbar() {
 
         // Hubungkan ke stream SSE real-time dari Laptop 1
         console.log("[Notifications] Menghubungkan ke SSE stream...");
-        const streamUrl = 'http://10.206.80.189:8080/notifications/stream';
+        const backendIp = process.env.NEXT_PUBLIC_BACKEND_IP || '10.206.80.189';
+        const streamUrl = `http://${backendIp}:8080/notifications/stream`;
         let eventSource: EventSource | null = null;
         let fallbackInterval: NodeJS.Timeout | null = null;
         let isUsingFallback = false;

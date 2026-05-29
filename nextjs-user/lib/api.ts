@@ -3,8 +3,18 @@ import Cookies from "js-cookie";
 
 export const API_BASE_URL = "/api/gateway";
 
+const getBaseURL = () => {
+    if (typeof window !== 'undefined') {
+        return '/api/gateway';
+    }
+    return 'http://localhost:3005/api/gateway';
+};
+
 const API = axios.create({
-    baseURL: "http://10.206.80.189:8080", // Gunakan IP Laptop 1 & port Gateway 8080
+    baseURL: getBaseURL(),
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
 
