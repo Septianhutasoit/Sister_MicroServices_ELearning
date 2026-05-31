@@ -1,0 +1,11 @@
+
+> nextjs-user@0.1.0 dev
+> next dev -p 3005
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3005
+- Network:       http://172.19.112.1:3005
+- Environments: .env.local
+✓ Ready in 888ms
+
+ GET /login 200 in 2.9s (next.js: 2.3s, application-code: 608ms)

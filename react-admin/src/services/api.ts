@@ -1,8 +1,19 @@
 import axios from "axios";
 
-// ── IP Backend (Laptop 1 = Server Utama) ──────────────────────────────
 export const LAPTOP1_IP = "10.206.80.189";
-const GATEWAY_URL = `http://${LAPTOP1_IP}:8080`;
+export const LAPTOP2_IP = "10.206.80.228";
+
+const getGatewayUrl = () => {
+    if (typeof window !== "undefined") {
+        const hostname = window.location.hostname;
+        if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === LAPTOP2_IP) {
+            return `http://${hostname}:8080`;
+        }
+    }
+    return `http://${LAPTOP1_IP}:8080`;
+};
+
+const GATEWAY_URL = getGatewayUrl();
 
 // ── Auth Service (via Nginx gateway Laptop 1 → auth-service:3001) ─────
 // baseURL = gateway root, endpoint login = /auth/login

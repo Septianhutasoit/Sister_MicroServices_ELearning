@@ -1,0 +1,2 @@
+⚠ Slow filesystem detected. The benchmark took 258ms. If C:\PA2\Sister_MicroServices_ELearning\nextjs-user\.next/dev is a network drive, consider moving it to a local folder.
+See more: https://nextjs.org/docs/app/guides/local-development
