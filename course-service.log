@@ -1,0 +1,3 @@
+Menghubungkan ke MongoDB: mongodb://admin:admin123@10.206.80.189:27018,10.206.80.228:27018,10.206.80.79:27018/lms?authSource=admin&replicaSet=rs0
+Course & Enrollment Service berjalan di port 3002
+Course Service: Terhubung ke Kluster MongoDB Replica Set (lms)

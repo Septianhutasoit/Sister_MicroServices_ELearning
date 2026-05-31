@@ -184,7 +184,7 @@ app.post("/login", async (req, res) => {
     }
 
     // Bypass admin default
-    if (email === "admin@gmail.com" && password === "123") {
+    if ((email === "admin@gmail.com" && password === "123") || (email === "admin@edu.ai" && password === "admin123")) {
         const token = jwt.sign({ email, role: "admin" }, JWT_SECRET, { expiresIn: "1d" });
         return res.json({
             status: "success",
@@ -192,7 +192,7 @@ app.post("/login", async (req, res) => {
                 token,
                 user: {
                     name: "Administrator",
-                    email: "admin@gmail.com",
+                    email: email,
                     role: "admin"
                 }
             }
