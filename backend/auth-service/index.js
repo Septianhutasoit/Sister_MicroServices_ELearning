@@ -256,10 +256,18 @@ app.get("/users", async (req, res) => {
     try {
         let users = [];
         if (useDatabase) {
-            const result = await pool.query(
-                "SELECT id, name, email, created_at FROM users ORDER BY created_at DESC"
+            // Cek kolom yang tersedia terlebih dahulu agar kompatibel dengan berbagai skema
+            const colCheck = await pool.query(
+                `SELECT column_name FROM information_schema.columns WHERE table_name='users'`
             );
-            users = result.rows.map(u => ({ ...u, role: "student" }));
+            const cols = colCheck.rows.map(r => r.column_name);
+            const selectCreatedAt = cols.includes('created_at') ? 'created_at' : 'NULL as created_at';
+            const selectRole = cols.includes('role') ? 'role' : "'student' as role";
+
+            const result = await pool.query(
+                `SELECT id, name, email, ${selectRole}, ${selectCreatedAt} FROM users ORDER BY id DESC`
+            );
+            users = result.rows;
         } else {
             const rawUsers = readLocalUsers();
             users = rawUsers.map(({ password, ...u }) => u);
@@ -284,7 +292,9 @@ app.get("/users/count", async (req, res) => {
         }
         res.json({ status: "success", count });
     } catch (error) {
-        res.status(500).json({ status: "error", message: "Gagal menghitung pengguna." });
+        console.error("Count Users Error:", error);
+        // Fallback: return 0 daripada crash
+        res.json({ status: "success", count: 0 });
     }
 });
 
