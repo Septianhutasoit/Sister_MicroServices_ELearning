@@ -25,6 +25,13 @@ const dbConfigs = [
     },
     {
         user: "postgres",
+        host: "10.206.80.228",
+        database: "exam_db",
+        password: "postgres",
+        port: 5433, // Replicated Slave/Master di Laptop 2
+    },
+    {
+        user: "postgres",
         host: "localhost",
         database: "exam_db",
         password: "postgres",
@@ -51,15 +58,19 @@ async function initDb() {
             const tempPool = new Pool(config);
             const client = await tempPool.connect();
             console.log(`Koneksi ke PostgreSQL (${config.host}:${config.port}) berhasil!`);
+            
+            // Cek secara dinamis apakah DB dalam mode standby (read-only) atau master (writable)
+            const recoveryCheck = await client.query("SELECT pg_is_in_recovery()");
+            isReadOnly = recoveryCheck.rows[0].pg_is_in_recovery;
+            
             client.release();
             
             pool = tempPool;
             useDatabase = true;
-            if (config.port === 5433) {
-                isReadOnly = true;
-                console.log("Koneksi berjalan dalam mode READ-ONLY (Slave Local).");
+            if (isReadOnly) {
+                console.log("Koneksi berjalan dalam mode READ-ONLY (Slave/Standby).");
             } else {
-                isReadOnly = false;
+                console.log("Koneksi berjalan dalam mode READ-WRITE (Master/Promoted).");
             }
             break;
         } catch (err) {

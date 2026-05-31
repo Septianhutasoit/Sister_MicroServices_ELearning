@@ -7,7 +7,7 @@ const getBaseURL = () => {
     if (typeof window !== 'undefined') {
         return '/api/gateway';
     }
-    return 'http://localhost:3005/api/gateway';
+    return 'http://localhost:8080/api/gateway';
 };
 
 const API = axios.create({
