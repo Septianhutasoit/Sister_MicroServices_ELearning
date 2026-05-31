@@ -390,19 +390,30 @@ app.post("/sync-progress", async (req, res) => {
         if (completion_percent >= 100) {
             const notifMessage = `Selamat! Anda telah menyelesaikan kursus "${course_name || `Kursus #${course_id}`}" dengan 100%. Terus belajar! 🎓`;
             try {
-                const fetch = require('node-fetch');
-                const notifRes = await fetch('http://10.206.80.189:8080/notifications', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id,
-                        message: notifMessage,
-                    }),
-                });
-                if (notifRes.ok) {
-                    console.log(`[SyncProgress] Notifikasi berhasil dikirim ke ${user_id}`);
-                } else {
-                    console.warn(`[SyncProgress] Notifikasi gagal terkirim: HTTP ${notifRes.status}`);
+                let fetchFn = typeof globalThis.fetch === 'function' ? globalThis.fetch : null;
+                if (!fetchFn) {
+                    try {
+                        fetchFn = require('node-fetch');
+                    } catch (e) {
+                        console.warn('[SyncProgress] node-fetch tidak ditemukan dan global fetch tidak tersedia.');
+                    }
+                }
+
+                if (fetchFn) {
+                    const gatewayUrl = process.env.GATEWAY_URL || 'http://10.206.80.189:8080';
+                    const notifRes = await fetchFn(`${gatewayUrl}/notifications`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id,
+                            message: notifMessage,
+                        }),
+                    });
+                    if (notifRes.ok) {
+                        console.log(`[SyncProgress] Notifikasi berhasil dikirim ke ${user_id}`);
+                    } else {
+                        console.warn(`[SyncProgress] Notifikasi gagal terkirim: HTTP ${notifRes.status}`);
+                    }
                 }
             } catch (notifErr) {
                 console.warn('[SyncProgress] Gagal mengirim notifikasi ke Laptop 1:', notifErr.message);
@@ -438,6 +449,55 @@ app.get("/progress/:userId", async (req, res) => {
         console.error("Get Progress Error:", error);
         res.status(500).json({ status: "error", message: "Gagal mengambil data progress." });
     }
+});
+
+// ── NOTIFICATION SERVICES (SSE & HISTORY) ──────────────────────────────────
+const notifications = [];
+const sseClients = new Set();
+
+app.get('/notifications', (req, res) => {
+    res.json({ status: 'success', data: notifications });
+});
+
+app.post('/notifications', (req, res) => {
+    const { user_id, message } = req.body;
+    const newNotif = {
+        id: Date.now().toString(),
+        user_id: user_id || 'all',
+        message: message || '',
+        status: 'unread',
+        created_at: new Date().toISOString()
+    };
+    notifications.push(newNotif);
+
+    // Broadcast ke SSE clients
+    const rawData = `data: ${JSON.stringify(newNotif)}\n\n`;
+    sseClients.forEach(client => {
+        try {
+            client.write(rawData);
+        } catch (e) {
+            console.error('[Notifications] Gagal kirim ke SSE client:', e.message);
+        }
+    });
+
+    res.status(201).json({ status: 'success', data: newNotif });
+});
+
+app.get('/notifications/stream', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Kirim initial connection ok header
+    res.write(':ok\n\n');
+
+    const client = res;
+    sseClients.add(client);
+
+    req.on('close', () => {
+        sseClients.delete(client);
+    });
 });
 
 app.listen(PORT, () => {

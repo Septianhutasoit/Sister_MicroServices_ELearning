@@ -233,7 +233,7 @@ export default function Users() {
             </TableContainer>
 
             {/* ── DIALOG KONFIRMASI HAPUS ──────────────────────────── */}
-            <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, user: null })} PaperProps={{ sx: { borderRadius: 4 } }}>
+            <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, user: null })} slotProps={{ paper: { sx: { borderRadius: 4 } } }}>
                 <DialogTitle sx={{ fontWeight: 800, color: '#1e293b' }}>Konfirmasi Hapus User</DialogTitle>
                 <Divider />
                 <DialogContent>

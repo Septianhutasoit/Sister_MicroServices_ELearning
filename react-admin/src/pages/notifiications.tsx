@@ -47,7 +47,7 @@ export default function Notifications() {
         if (!silent) setLoading(true);
         else setRefreshing(true);
         try {
-            const res = await NOTIF_API.get('/notifications');
+            const res = await NOTIF_API.get('/');
             let list: Notification[] = [];
             if (Array.isArray(res.data)) list = res.data;
             else if (res.data?.value) list = res.data.value;
@@ -90,8 +90,8 @@ export default function Notifications() {
         if (!broadcastMsg.trim()) return;
         setSending(true);
         try {
-            // POST ke notif service Laptop 1 (gateway 10.206.80.189:8080)
-            await NOTIF_API.post('/notifications', {
+            // POST ke notif service
+            await NOTIF_API.post('/', {
                 user_id: targetUser.trim() || 'all',
                 message: broadcastMsg.trim(),
             });
@@ -267,7 +267,7 @@ export default function Notifications() {
             </Card>
 
             {/* ── DIALOG KIRIM NOTIFIKASI ─────────────────────── */}
-            <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 4 } }}>
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth slotProps={{ paper: { sx: { borderRadius: 4 } } }}>
                 <DialogTitle sx={{ fontWeight: 800, color: '#1e293b', pb: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <BroadcastIcon sx={{ color: '#008A5E' }} />

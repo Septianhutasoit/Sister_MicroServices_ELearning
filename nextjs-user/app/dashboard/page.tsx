@@ -124,40 +124,15 @@ export default function DashboardPage() {
         setUserName(storedName);
         
         const fetchDashboardData = async () => {
-            let userPts = 0;
+            let completedCoursesCount = 0;
+            let examPoints = 0;
+            let mappedActiveCourses: any[] = [];
             
-            // 1. Ambil data nilai ujian untuk kalkulasi poin (Score * 10)
-            try {
-                const examRes = await API.get('/exams/history');
-                const history = examRes.data.data || [];
-                userPts = history.reduce((acc: number, curr: any) => acc + (curr.score || 0), 0) * 10;
-            } catch (e) {
-                console.warn("Gagal mengambil data poin/nilai dari backend, menggunakan 0 pts.");
-                userPts = 0;
-            }
-
-            // 2. Buat leaderboard dinamis terurut berdasarkan pts tertinggi
-            const initialLeaderboard = [
-                { rank: 1, name: 'Aulia Rahma', pts: 4820, avatar: 'A' },
-                { rank: 2, name: 'Dimas Prasetyo', pts: 4650, avatar: 'D' },
-                { rank: 3, name: 'Reza Firmansyah', pts: 3980, avatar: 'R' },
-                { rank: 4, name: 'Nadia Kusuma', pts: 3750, avatar: 'N' },
-                { rank: 5, name: `${storedName} (Kamu)`, pts: userPts, avatar: storedName.charAt(0).toUpperCase(), isMe: true }
-            ];
-
-            const sorted = initialLeaderboard
-                .sort((a, b) => b.pts - a.pts)
-                .map((item, index) => ({
-                    ...item,
-                    rank: index + 1
-                }));
-            setLeaderboard(sorted);
-
-            // 3. Fetch data pembelajaran aktif
+            // 1. Fetch data pembelajaran aktif untuk menghitung progres materi
             try {
                 const res = await API.get('/enrollments/me');
                 const fetched = res.data.data || [];
-                const mapped = fetched.map((c: any) => {
+                mappedActiveCourses = fetched.map((c: any) => {
                     const courseDetails = c.course || {};
                     const id = getSafeId(c.courseId) || getSafeId(courseDetails.id) || getSafeId(courseDetails._id) || getSafeId(c.id) || getSafeId(c._id) || Math.random().toString();
                     const totalLessons = c.totalChapters || courseDetails.totalChapters || (courseDetails.materials ? courseDetails.materials.length : 10);
@@ -178,6 +153,10 @@ export default function DashboardPage() {
                         }
                     } catch (_) {}
 
+                    if (progress >= 100) {
+                        completedCoursesCount++;
+                    }
+
                     return {
                         id,
                         title: c.title || courseDetails.title || 'Materi Belajar',
@@ -193,11 +172,40 @@ export default function DashboardPage() {
                         instructor: c.instructor || courseDetails.instructor || 'Pengajar'
                     };
                 });
-                setActiveCourses(mapped);
+                setActiveCourses(mappedActiveCourses);
             } catch (error) {
                 console.warn("Gagal mengambil data pembelajaran aktif dari backend:", error);
                 setActiveCourses([]);
             }
+
+            // 2. Fetch data nilai ujian (dari Laptop 3) untuk menghitung skor ujian yang lulus (score >= 60)
+            try {
+                const examRes = await API.get('/exams/history');
+                const history = examRes.data.data || [];
+                const passedExams = history.filter((curr: any) => (curr.score || 0) >= 60);
+                examPoints = passedExams.reduce((acc: number, curr: any) => acc + (curr.score || 0), 0);
+            } catch (e) {
+                console.warn("Gagal mengambil data poin/nilai ujian dari backend, menggunakan 0 pts.");
+            }
+
+            const userPts = (completedCoursesCount * 500) + examPoints;
+
+            // 3. Buat leaderboard dinamis terurut berdasarkan pts tertinggi
+            const initialLeaderboard = [
+                { rank: 1, name: 'Aulia Rahma', pts: 4820, avatar: 'A' },
+                { rank: 2, name: 'Dimas Prasetyo', pts: 4650, avatar: 'D' },
+                { rank: 3, name: 'Reza Firmansyah', pts: 3980, avatar: 'R' },
+                { rank: 4, name: 'Nadia Kusuma', pts: 3750, avatar: 'N' },
+                { rank: 5, name: `${storedName} (Kamu)`, pts: userPts, avatar: storedName.charAt(0).toUpperCase(), isMe: true }
+            ];
+
+            const sorted = initialLeaderboard
+                .sort((a, b) => b.pts - a.pts)
+                .map((item, index) => ({
+                    ...item,
+                    rank: index + 1
+                }));
+            setLeaderboard(sorted);
         };
         
         fetchDashboardData();

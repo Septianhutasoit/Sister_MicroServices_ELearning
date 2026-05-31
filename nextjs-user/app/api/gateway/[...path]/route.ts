@@ -8,7 +8,7 @@ const SERVICE_MAP: Record<string, { port: number; stripPrefix: boolean; host?: s
     'courses':         { port: 3002, stripPrefix: false, host: BACKEND_HOST },                     // /courses    -> 10.206.80.189:3002/courses
     'enroll':          { port: 3002, stripPrefix: false, host: BACKEND_HOST },                     // /enroll     -> 10.206.80.189:3002/enroll
     'enrollments':     { port: 3002, stripPrefix: false, host: BACKEND_HOST },                     // /enrollments -> 10.206.80.189:3002/enrollments
-    'notifications':   { port: 3001, stripPrefix: false, host: BACKEND_HOST },                     // /notifications -> 10.206.80.189:3001/notifications
+    'notifications':   { port: 8080, stripPrefix: false, host: BACKEND_HOST },                     // /notifications -> 10.206.80.189:8080/notifications
     'exams':           { port: 3004, stripPrefix: true, host: EXAMS_HOST },                        // /exams      -> 10.206.80.79:3004
     'sync-progress':   { port: 3001, stripPrefix: false, host: BACKEND_HOST },                     // /sync-progress -> 10.206.80.189:3001/sync-progress
     'progress':        { port: 3001, stripPrefix: false, host: BACKEND_HOST },                     // /progress/:userId -> 10.206.80.189:3001/progress/:userId

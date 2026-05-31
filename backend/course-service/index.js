@@ -42,6 +42,8 @@ const courseSchema = new mongoose.Schema({
     rating: { type: Number, default: 4.8 },
     students: { type: Number, default: 0 },
     totalChapters: { type: Number, default: 5 },
+    materials: [mongoose.Schema.Types.Mixed],
+    exams: [mongoose.Schema.Types.Mixed],
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -105,6 +107,10 @@ app.get('/courses', async (req, res) => {
     }
 });
 
+// ── GET semua enrollment (untuk Dashboard Admin) ──────────────────────
+app.get('/courses/enrollments', getEnrollmentsHandler);
+app.get('/enrollments', getEnrollmentsHandler);
+
 // ── GET kursus by ID ────────────────────────────────────────────────────
 app.get('/courses/:id', async (req, res) => {
     try {
@@ -118,10 +124,86 @@ app.get('/courses/:id', async (req, res) => {
     }
 });
 
+// ── POST tambah kursus baru ──────────────────────────────────────────────
+const postCourseHandler = async (req, res) => {
+    try {
+        const { title, description, instructor, category, imageUrl, totalChapters, rating, materials, exams } = req.body;
+        const newCourse = new Course({
+            title,
+            description,
+            instructor,
+            category: category || 'Teknik',
+            imageUrl: imageUrl || 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=500&auto=format&fit=crop',
+            rating: rating || 4.8,
+            students: 0,
+            totalChapters: totalChapters || (materials ? materials.length : 5),
+            materials: materials || [],
+            exams: exams || []
+        });
+        await newCourse.save();
+        res.status(201).json({ status: 'success', data: newCourse });
+    } catch (err) {
+        console.error('Gagal menambahkan kursus:', err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+app.post('/courses', postCourseHandler);
+app.post('/courses/courses', postCourseHandler);
+
+// ── DELETE hapus kursus ──────────────────────────────────────────────────
+const deleteCourseHandler = async (req, res) => {
+    try {
+        const result = await Course.findByIdAndDelete(req.params.id);
+        if (!result) return res.status(404).json({ status: 'error', message: 'Kursus tidak ditemukan.' });
+        res.json({ status: 'success', message: 'Kursus berhasil dihapus.' });
+    } catch (err) {
+        console.error('Gagal menghapus kursus:', err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+};
+
+app.delete('/courses/:id', deleteCourseHandler);
+app.delete('/courses/courses/:id', deleteCourseHandler);
+
+
+// ── GET semua enrollment (untuk Dashboard Admin) ──────────────────────
+async function getEnrollmentsHandler(req, res) {
+    try {
+        const enrollments = await Enrollment.find().sort({ createdAt: -1 }).limit(10);
+        const result = [];
+        for (const enroll of enrollments) {
+            let course = null;
+            if (enroll.courseId) {
+                try {
+                    if (mongoose.Types.ObjectId.isValid(enroll.courseId)) {
+                        course = await Course.findById(enroll.courseId);
+                    } else {
+                        course = await Course.findOne({ _id: String(enroll.courseId) });
+                    }
+                } catch (e) {
+                    console.warn(`CastError diabaikan untuk courseId: ${enroll.courseId}`);
+                }
+            }
+            result.push({
+                _id: enroll._id,
+                user_email: enroll.userId,
+                course_title: course ? course.title : 'Kursus Tidak Diketahui',
+                enrolled_at: enroll.createdAt
+            });
+        }
+        res.json({ status: 'success', data: result });
+    } catch (err) {
+        console.error('Gagal mengambil semua data pendaftaran:', err);
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+}
+
 // ── GET enrollment user aktif (/enrollments/me) ──────────────────────────
 app.get('/enrollments/me', authenticateToken, async (req, res) => {
     try {
-        const userId = String(req.user.id);
+        // Gunakan EMAIL sebagai userId agar sinkron dengan data MongoDB yang sudah ada
+        const userId = req.user.email;
         const enrollments = await Enrollment.find({ userId });
         
         const result = [];
@@ -156,7 +238,8 @@ app.get('/enrollments/me', authenticateToken, async (req, res) => {
 // ── POST daftar kursus baru (/enroll) ──────────────────────────────────
 app.post('/enroll', authenticateToken, async (req, res) => {
     try {
-        const userId = String(req.user.id);
+        // Gunakan EMAIL sebagai userId agar sinkron dengan data MongoDB yang sudah ada
+        const userId = req.user.email;
         const { courseId } = req.body;
 
         if (!courseId) {
@@ -190,7 +273,8 @@ app.post('/enroll', authenticateToken, async (req, res) => {
 // ── PUT/PATCH Update Progress Kelas ──────────────────────────────────────
 async function updateProgressHandler(req, res) {
     try {
-        const userId = String(req.user.id);
+        // Gunakan EMAIL sebagai userId agar sinkron dengan data MongoDB yang sudah ada
+        const userId = req.user.email;
         const courseId = req.params.courseId || req.body.courseId;
         const { completedChapters, completionPercent, progress } = req.body;
 

@@ -1,0 +1,269 @@
+
+> nextjs-user@0.1.0 dev
+> next dev -p 3005
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3005
+- Network:       http://192.168.163.1:3005
+- Environments: .env.local
+✓ Ready in 1420ms
+
+○ Compiling /login ...
+ GET /login 200 in 4.8s (next.js: 4.1s, application-code: 689ms)
+ GET /login 200 in 4.9s (next.js: 4.7s, application-code: 163ms)
+[Proxy] POST → http://10.206.80.189:3001/login
+ POST /api/gateway/auth/login 200 in 4.2s (next.js: 3.6s, application-code: 609ms)
+ GET /courses 200 in 330ms (next.js: 225ms, application-code: 104ms)
+[Proxy] GET → http://10.206.80.189:3002/courses
+ GET /api/gateway/courses 200 in 184ms (next.js: 41ms, application-code: 143ms)
+[Proxy] GET → http://10.206.80.189:3002/courses
+ GET /api/gateway/courses 200 in 184ms (next.js: 41ms, application-code: 143ms)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 106ms (next.js: 21ms, application-code: 84ms)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 70ms (next.js: 25ms, application-code: 45ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[browser] [Notifications] EventSource terputus atau error. Beralih ke fallback polling... [object Event] (app/components/StudentNavbar.tsx:131:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 48ms (next.js: 14ms, application-code: 34ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 40ms (next.js: 15ms, application-code: 25ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 43ms (next.js: 10ms, application-code: 33ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 36ms (next.js: 10ms, application-code: 26ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 58ms (next.js: 11ms, application-code: 47ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 38ms (next.js: 11ms, application-code: 26ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 33ms (next.js: 11ms, application-code: 22ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 27ms (next.js: 9ms, application-code: 18ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 29ms (next.js: 11ms, application-code: 18ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 30ms (next.js: 9ms, application-code: 21ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 28ms (next.js: 9ms, application-code: 19ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 31ms (next.js: 10ms, application-code: 20ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /dashboard 200 in 68ms (next.js: 31ms, application-code: 38ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+ GET /courses 200 in 29ms (next.js: 3ms, application-code: 27ms)
+[Proxy] GET → http://10.206.80.189:3002/courses
+ GET /api/gateway/courses 200 in 78ms (next.js: 13ms, application-code: 64ms)
+[Proxy] GET → http://10.206.80.189:3002/courses
+ GET /api/gateway/courses 200 in 46ms (next.js: 5ms, application-code: 41ms)
+ GET /my-learning 200 in 55ms (next.js: 28ms, application-code: 27ms)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+ GET /api/gateway/enrollments/me 200 in 77ms (next.js: 13ms, application-code: 65ms)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+ GET /api/gateway/enrollments/me 200 in 36ms (next.js: 7ms, application-code: 30ms)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 35ms (next.js: 11ms, application-code: 24ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+ GET /api/gateway/exams/history 502 in 10.5s (next.js: 14ms, application-code: 10.5s)
+[browser] Gagal mengambil data poin/nilai dari backend, menggunakan 0 pts. (app/dashboard/page.tsx:135:25)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+ GET /api/gateway/enrollments/me 200 in 33ms (next.js: 2ms, application-code: 30ms)
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+ GET /api/gateway/exams/history 502 in 10.6s (next.js: 11ms, application-code: 10.6s)
+[browser] Gagal mengambil data poin/nilai dari backend, menggunakan 0 pts. (app/dashboard/page.tsx:135:25)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+ GET /api/gateway/enrollments/me 200 in 79ms (next.js: 16ms, application-code: 63ms)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 24ms (next.js: 3ms, application-code: 22ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /dashboard 200 in 28ms (next.js: 4ms, application-code: 24ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+ GET /api/gateway/exams/history 200 in 2.6s (next.js: 8ms, application-code: 2.6s)
+ GET /dashboard 200 in 130ms (next.js: 3ms, application-code: 127ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 34ms (next.js: 7ms, application-code: 27ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 29ms (next.js: 10ms, application-code: 19ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /api/gateway/exams/history 200 in 2.7s (next.js: 12ms, application-code: 2.7s)
+ GET /dashboard 200 in 68ms (next.js: 4ms, application-code: 64ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 21ms (next.js: 4ms, application-code: 17ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 25ms (next.js: 4ms, application-code: 20ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /api/gateway/exams/history 200 in 301ms (next.js: 9ms, application-code: 292ms)
+ GET /dashboard 200 in 101ms (next.js: 7ms, application-code: 94ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 19ms (next.js: 5ms, application-code: 14ms)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /api/gateway/notifications 404 in 25ms (next.js: 4ms, application-code: 21ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /api/gateway/exams/history 200 in 873ms (next.js: 4ms, application-code: 869ms)
+ GET /dashboard 200 in 113ms (next.js: 10ms, application-code: 104ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 125ms (next.js: 6ms, application-code: 119ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /api/gateway/exams/history 200 in 309ms (next.js: 16ms, application-code: 293ms)
+ GET /dashboard 200 in 138ms (next.js: 4ms, application-code: 134ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 25ms (next.js: 7ms, application-code: 18ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 19ms (next.js: 3ms, application-code: 16ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+ GET /api/gateway/exams/history 502 in 10.2s (next.js: 4ms, application-code: 10.2s)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+[browser] Gagal mengambil data poin/nilai dari backend, menggunakan 0 pts. (app/dashboard/page.tsx:135:25)
+ GET /api/gateway/enrollments/me 200 in 53ms (next.js: 9ms, application-code: 44ms)
+ GET /my-learning 200 in 27ms (next.js: 5ms, application-code: 22ms)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+ GET /api/gateway/enrollments/me 200 in 44ms (next.js: 11ms, application-code: 33ms)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+ GET /api/gateway/enrollments/me 200 in 24ms (next.js: 3ms, application-code: 20ms)
+ GET /dashboard 200 in 24ms (next.js: 2ms, application-code: 21ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[browser] [Notifications] EventSource terputus atau error. Beralih ke fallback polling... [object Event] (app/components/StudentNavbar.tsx:131:25)
+ GET /api/gateway/exams/history 200 in 8.2s (next.js: 10ms, application-code: 8.2s)
+ GET /dashboard 200 in 57ms (next.js: 3ms, application-code: 54ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 28ms (next.js: 5ms, application-code: 24ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 23ms (next.js: 3ms, application-code: 19ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+ GET /api/gateway/exams/history 502 in 10.3s (next.js: 8ms, application-code: 10.3s)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+[browser] Gagal mengambil data poin/nilai dari backend, menggunakan 0 pts. (app/dashboard/page.tsx:135:25)
+ GET /api/gateway/enrollments/me 200 in 50ms (next.js: 12ms, application-code: 38ms)
+[browser] [Notifications] EventSource terputus atau error. Beralih ke fallback polling... [object Event] (app/components/StudentNavbar.tsx:131:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 30ms (next.js: 7ms, application-code: 23ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 36ms (next.js: 7ms, application-code: 28ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 28ms (next.js: 7ms, application-code: 21ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 25ms (next.js: 7ms, application-code: 17ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 25ms (next.js: 8ms, application-code: 17ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 79ms (next.js: 7ms, application-code: 72ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 22ms (next.js: 8ms, application-code: 14ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 35ms (next.js: 7ms, application-code: 28ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 29ms (next.js: 7ms, application-code: 22ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 26ms (next.js: 7ms, application-code: 19ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 23ms (next.js: 7ms, application-code: 16ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 28ms (next.js: 8ms, application-code: 19ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 33ms (next.js: 7ms, application-code: 26ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 50ms (next.js: 9ms, application-code: 41ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 40ms (next.js: 8ms, application-code: 33ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 28ms (next.js: 8ms, application-code: 20ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 33ms (next.js: 8ms, application-code: 25ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 31ms (next.js: 8ms, application-code: 23ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 27ms (next.js: 8ms, application-code: 19ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 25ms (next.js: 7ms, application-code: 18ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+ GET /dashboard 200 in 55ms (next.js: 2ms, application-code: 52ms)
+[Proxy] GET → http://10.206.80.79:3004/history
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 28ms (next.js: 3ms, application-code: 25ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 17ms (next.js: 3ms, application-code: 14ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy Error] http://10.206.80.79:3004/history: fetch failed
+ GET /api/gateway/exams/history 502 in 10.5s (next.js: 9ms, application-code: 10.5s)
+[Proxy] GET → http://10.206.80.189:3002/enrollments/me
+[browser] Gagal mengambil data poin/nilai dari backend, menggunakan 0 pts. (app/dashboard/page.tsx:135:25)
+ GET /api/gateway/enrollments/me 200 in 60ms (next.js: 10ms, application-code: 50ms)
+[browser] [Notifications] EventSource terputus atau error. Beralih ke fallback polling... [object Event] (app/components/StudentNavbar.tsx:131:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 25ms (next.js: 7ms, application-code: 18ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 29ms (next.js: 7ms, application-code: 22ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 23ms (next.js: 8ms, application-code: 15ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 26ms (next.js: 7ms, application-code: 19ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 38ms (next.js: 7ms, application-code: 31ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 42ms (next.js: 7ms, application-code: 36ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 29ms (next.js: 8ms, application-code: 21ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[Proxy] GET → http://10.206.80.189:3001/notifications
+ GET /api/gateway/notifications 404 in 30ms (next.js: 7ms, application-code: 22ms)
+[browser] [Notifications] Gagal mengambil: Request failed with status code 404 (app/components/StudentNavbar.tsx:94:25)
+[?25h

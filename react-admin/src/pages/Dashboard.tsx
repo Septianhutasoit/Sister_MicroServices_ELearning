@@ -6,7 +6,7 @@ import {
     StorageRounded, CheckCircleRounded, TrendingUpRounded,
     ErrorRounded, NotificationsActiveRounded,
 } from "@mui/icons-material";
-import { AUTH_API, NOTIF_API, COURSE_API } from "../services/api";
+import { AUTH_API, NOTIF_API, COURSE_API, LAPTOP1_IP } from "../services/api";
 
 interface ServiceHealth {
     name: string;
@@ -29,10 +29,10 @@ export default function Dashboard() {
     const [notifCount, setNotifCount] = useState<number | null>(null);
     const [recentEnrollments, setRecentEnrollments] = useState<RecentEnrollment[]>([]);
     const [services, setServices] = useState<ServiceHealth[]>([
-        { name: 'API Gateway (Nginx)', type: 'Load Balancer', port: ':8080', host: '10.206.80.189', online: null },
-        { name: 'Auth & User Service', type: 'PostgreSQL + Redis', port: ':3001', host: 'localhost', online: null },
-        { name: 'Course Service', type: 'MongoDB', port: ':3002', host: 'localhost', online: null },
-        { name: 'Notification Service', type: 'Express + PostgreSQL', port: ':8080', host: '10.206.80.189', online: null },
+        { name: 'API Gateway (Nginx)', type: 'Load Balancer', port: ':8080', host: LAPTOP1_IP, online: null },
+        { name: 'Auth & User Service', type: 'PostgreSQL + Redis', port: ':3001', host: LAPTOP1_IP, online: null },
+        { name: 'Course Service', type: 'MongoDB', port: ':3002', host: LAPTOP1_IP, online: null },
+        { name: 'Notification Service', type: 'Express + PostgreSQL', port: ':8080', host: LAPTOP1_IP, online: null },
     ]);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export default function Dashboard() {
             .catch(() => setUserCount(null));
 
         // ── Fetch jumlah kursus dari course-service ───────
-        COURSE_API.get('/courses')
+        COURSE_API.get('/')
             .then(res => {
                 const data = res.data?.data || res.data || [];
                 setCourseCount(Array.isArray(data) ? data.length : null);
@@ -50,7 +50,7 @@ export default function Dashboard() {
             .catch(() => setCourseCount(null));
 
         // ── Fetch jumlah notifikasi dari Laptop 1 ─────────
-        NOTIF_API.get('/notifications')
+        NOTIF_API.get('/')
             .then(res => {
                 const list = res.data?.value || res.data?.data || res.data || [];
                 setNotifCount(Array.isArray(list) ? list.length : null);
@@ -66,19 +66,20 @@ export default function Dashboard() {
             .catch(() => setRecentEnrollments([]));
 
         // ── Health check semua service ────────────────────
-        const checkService = async (idx: number, url: string) => {
+        const checkService = async (idx: number, url: string, requireOk = false) => {
             try {
-                await fetch(url, { method: 'GET', signal: AbortSignal.timeout(3000) });
-                setServices(prev => prev.map((s, i) => i === idx ? { ...s, online: true } : s));
+                const res = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(3000) });
+                const isOnline = requireOk ? res.ok : true;
+                setServices(prev => prev.map((s, i) => i === idx ? { ...s, online: isOnline } : s));
             } catch {
                 setServices(prev => prev.map((s, i) => i === idx ? { ...s, online: false } : s));
             }
         };
 
-        checkService(0, 'http://10.206.80.189:8080/');
-        checkService(1, 'http://localhost:3001/');
-        checkService(2, 'http://localhost:3002/');
-        checkService(3, 'http://10.206.80.189:8080/notifications');
+        checkService(0, `http://${LAPTOP1_IP}:8080/auth/`, false);
+        checkService(1, `http://${LAPTOP1_IP}:8080/auth/`, true);
+        checkService(2, `http://${LAPTOP1_IP}:8080/courses/`, true);
+        checkService(3, `http://${LAPTOP1_IP}:8080/notifications/`, true);
     }, []);
 
     const allOnline = services.every(s => s.online === true);

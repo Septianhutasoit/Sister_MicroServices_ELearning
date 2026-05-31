@@ -56,7 +56,7 @@ export default function Navbar({ onMenuClick, onLogout }: { onMenuClick?: () => 
     const fetchNotifications = useCallback(async () => {
         setNotifLoading(true);
         try {
-            const res = await NOTIF_API.get('/notifications');
+            const res = await NOTIF_API.get('/');
             let list: Notification[] = [];
             if (Array.isArray(res.data)) list = res.data;
             else if (res.data?.value) list = res.data.value;
@@ -151,7 +151,7 @@ export default function Navbar({ onMenuClick, onLogout }: { onMenuClick?: () => 
                 onClose={() => setNotifAnchorEl(null)}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                PaperProps={{ sx: { borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', width: 360, mt: 1.5 } }}
+                slotProps={{ paper: { sx: { borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', width: 360, mt: 1.5 } } }}
             >
                 <Box sx={{ px: 2.5, py: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9' }}>
                     <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: 15 }}>

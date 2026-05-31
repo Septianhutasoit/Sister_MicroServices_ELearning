@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Box, Button, Typography, Paper, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Dialog, DialogTitle,
     DialogContent, DialogActions, TextField, IconButton,
-    Radio, RadioGroup, FormControlLabel, FormControl, Chip
+    Radio, RadioGroup, FormControlLabel, FormControl, Chip,
+    CircularProgress
 } from "@mui/material";
-import { Add, Delete, Edit, MenuBook, Quiz } from "@mui/icons-material";
+import { Add, Delete, MenuBook, Quiz } from "@mui/icons-material";
+import { COURSE_API } from "../services/api";
 
 // --- TIPE DATA UNTUK MICROSERVICES ---
 interface Material {
@@ -19,7 +21,21 @@ interface ExamQuestion {
     correctAnswerIndex: number; // Index array (0, 1, 2, atau 3)
 }
 
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    instructor: string;
+    category?: string;
+    totalChapters: number;
+    materials?: any[];
+    exams?: any[];
+}
+
 export default function Courses() {
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
+
     // State untuk membuka/menutup form modal
     const [openDialog, setOpenDialog] = useState(false);
 
@@ -31,6 +47,36 @@ export default function Courses() {
     // State Dinamis untuk Materi & Ujian
     const [materials, setMaterials] = useState<Material[]>([]);
     const [exams, setExams] = useState<ExamQuestion[]>([]);
+
+    const fetchCourses = async () => {
+        setLoading(true);
+        try {
+            const res = await COURSE_API.get("/");
+            const data = res.data?.data || res.data || [];
+            setCourses(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error("Gagal memuat daftar kursus:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCourses();
+    }, []);
+
+    const handleDelete = async (id: string) => {
+        if (window.confirm("Apakah Anda yakin ingin menghapus kursus ini?")) {
+            try {
+                await COURSE_API.delete(`/${id}`);
+                alert("Kursus berhasil dihapus!");
+                fetchCourses();
+            } catch (err) {
+                console.error("Gagal menghapus kursus:", err);
+                alert("Gagal menghapus kursus.");
+            }
+        }
+    };
 
     // --- FUNGSI DYNAMIC MATERI ---
     const addMaterial = () => {
@@ -70,20 +116,25 @@ export default function Courses() {
 
     // --- FUNGSI SIMPAN KE BACKEND ---
     const handleSubmit = async () => {
-        // Ini adalah Payload JSON yang akan dikirim ke API Gateway -> Course Service (MongoDB)
         const payload = {
             title: courseTitle,
             description: courseDesc,
             instructor: instructor,
-            materials: materials,
+            category: "Teknik",
+            totalChapters: materials.length || 5,
+            materials: materials.map(m => ({ title: m.title, theory: m.content, duration: "10 menit" })),
             exams: exams
         };
 
-        console.log("MENGIRIM DATA KE MICROSERVICES:", payload);
-        alert("Data berhasil dirakit! Cek Console Browser (F12) untuk melihat format JSON yang siap dikirim ke Node.js");
-
-        // TODO Nanti: await API.post('/courses', payload);
-        handleCloseDialog();
+        try {
+            await COURSE_API.post("/", payload);
+            alert("Kursus berhasil disimpan dan dipublikasikan!");
+            fetchCourses();
+            handleCloseDialog();
+        } catch (err) {
+            console.error("Gagal menyimpan kursus:", err);
+            alert("Gagal menyimpan kursus.");
+        }
     };
 
     const handleCloseDialog = () => {
@@ -127,21 +178,37 @@ export default function Courses() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {/* Data Dummy Sementara sebelum API GET jalan */}
-                        <TableRow hover>
-                            <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>Arsitektur Microservices</TableCell>
-                            <TableCell>Tim Supabase</TableCell>
-                            <TableCell>
-                                <Box sx={{ display: 'flex', gap: 1 }}>
-                                    <Chip icon={<MenuBook fontSize="small" />} label="5 Materi" size="small" color="primary" variant="outlined" />
-                                    <Chip icon={<Quiz fontSize="small" />} label="10 Soal Ujian" size="small" color="warning" variant="outlined" />
-                                </Box>
-                            </TableCell>
-                            <TableCell align="right">
-                                <IconButton color="primary"><Edit /></IconButton>
-                                <IconButton color="error"><Delete /></IconButton>
-                            </TableCell>
-                        </TableRow>
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={4} align="center">
+                                    <CircularProgress size={24} sx={{ my: 2 }} />
+                                </TableCell>
+                            </TableRow>
+                        ) : courses.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={4} align="center">
+                                    Belum ada kursus.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            courses.map((course) => (
+                                <TableRow key={course._id} hover>
+                                    <TableCell sx={{ fontWeight: 600, color: '#1e293b' }}>
+                                        {course.title}
+                                    </TableCell>
+                                    <TableCell>{course.instructor}</TableCell>
+                                    <TableCell>
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <Chip icon={<MenuBook fontSize="small" />} label={`${course.materials?.length || course.totalChapters || 0} Materi`} size="small" color="primary" variant="outlined" />
+                                            <Chip icon={<Quiz fontSize="small" />} label={`${course.exams?.length || 0} Soal Ujian`} size="small" color="warning" variant="outlined" />
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <IconButton color="error" onClick={() => handleDelete(course._id)}><Delete /></IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
